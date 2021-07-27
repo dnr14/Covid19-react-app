@@ -3,29 +3,39 @@ const router = express.Router();
 const axios = require('axios');
 require("dotenv").config({ path: "../.env" })
 
-
-const URL = 'http://openapi.data.go.kr/openapi/service/rest/Covid19/getCovid19InfStateJson';
+const URL = process.env.URL;
 const SERVICE_KEY = process.env.OPENAPI_KEY;
 
-router.get("/covid-19", (req, res) => {
-  console.debug('💥💥💥 request 💥💥💥');
-  const { query } = req;
-  const full_url = getApi();
-  axios.get(full_url)
-    .then(axios_res => {
-      const { body } = axios_res.data.response;
-      res.send(body);
+const callCovidApi = async (_params) => {
+  let response;
+  console.log(_params);
+  try {
+    response = await axios.get(URL, {
+      params: {
+        ServiceKey: SERVICE_KEY,
+        ..._params
+      }
     });
+  } catch (error) {
+    console.error(error);
+  } finally {
+    console.log(response.data);
+  }
+  return response.data;
+}
+
+
+
+router.post("/covid-19", (req, res) => {
+
+  const { params } = req.body;
+  //   //이러면 문제가 있다 
+  //   //API서버가 고장나거나 요청이많아 데이터가 안오면
+  //   //클라이언트는 아무것도 못받는다.
+  const response = callCovidApi(params);
+  response.then(_res => res.send(_res.response));
 });
 
 
-function getApi() {
-  let queryParams = '?' + encodeURIComponent('ServiceKey') + '=' + SERVICE_KEY; /*Service Key*/
-  queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); /**/
-  queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10'); /**/
-  queryParams += '&' + encodeURIComponent('startCreateDt') + '=' + encodeURIComponent('20200310'); /**/
-  queryParams += '&' + encodeURIComponent('endCreateDt') + '=' + encodeURIComponent('20200315'); /**/
-  return URL + queryParams;
-}
 
 module.exports = router;
