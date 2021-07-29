@@ -1,0 +1,52 @@
+$white: #ecf0f1;
+$center: center;
+$h100: 100px;
+$fw900: 900;
+
+@mixin max560px {
+  @media (max-width: 560px) {
+    @content;
+  }
+}
+
+@mixin flex-items-postion($x, $y) {
+  display: flex;
+  justify-content: $x;
+  align-items: $y;
+}
+
+.covid--title {
+  @include flex-items-postion($center, $center);
+  color: $white;
+  height: $h100;
+  font-weight: $fw900;
+  letter-spacing: 0.5rem;
+
+  span {
+    display: inline-block;
+    font-size: 2rem;
+  }
+}
+
+.covid--menu {
+  height: $h100;
+  @include flex-items-postion($center, $center);
+
+  & > ul {
+    li {
+      display: inline-block;
+    }
+    li + li {
+      margin-left: 10px;
+    }
+  }
+
+  span {
+    width: 100%;
+    display: inline-block;
+    color: $white;
+    font-size: 1.3rem;
+    font-weight: $fw900;
+    letter-spacing: 0.3rem;
+  }
+}

@@ -1,12 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.jsx';
-import GlobalStyled from 'components/styled';
+import GlobalStyled, { AppWrapper } from 'components/styled';
 
 ReactDOM.render(
   <React.StrictMode>
     <GlobalStyled />
-    <App />
+    <AppWrapper>
+      <App />
+    </AppWrapper>
   </React.StrictMode>,
   document.getElementById('root')
 );
