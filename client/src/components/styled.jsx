@@ -14,7 +14,7 @@ const GlobalStyled = createGlobalStyle`
     margin: 0; 
   }
   html{
-    width: 100vw;
+    min-width: 500px;
   }
 
   ol, ul {
