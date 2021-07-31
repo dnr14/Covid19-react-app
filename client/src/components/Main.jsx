@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import DeathChart from "./DeathChart";
 import axios from "axios";
 import "scss/main.scss";
@@ -31,6 +31,19 @@ import { Title } from "./styled";
   createDt 등록일시분초
   updateDt 수정일시분초
 */
+
+const optimizeAnimation = (callback) => {
+  let ticking = false;
+  return (e) => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(() => {
+        callback(e);
+        ticking = false;
+      });
+    }
+  };
+};
 
 const deepEquals = (target, source) => {
   let result = target;
@@ -91,6 +104,7 @@ const initialValue = {
   endData: getToday(),
 };
 
+// 테스트 데이터
 const _apiData = {
   items: {
     item: [
@@ -113,11 +127,14 @@ const _apiData = {
     ],
   },
 };
-
+//부모엣 props로 넘겨줘도 반응되지않는다
 const Main = () => {
   // const [apiData, setApiData] = useState(null);
   const [apiData, setApiData] = useState(_apiData);
+  const debounce = useRef(false);
   const [data, setData] = useState(initialValue);
+  const divRef = useRef(null);
+  const [divWidth, setDivWidth] = useState(null);
   const startInput = useRef();
   const endInput = useRef();
   const isShow = useRef(true);
@@ -167,7 +184,27 @@ const Main = () => {
     // });
   }, [data]);
 
-  console.log(apiData);
+  useLayoutEffect(() => {
+    console.log(divRef.current.clientWidth);
+    setDivWidth(divRef.current.clientWidth);
+    const handleResize = () => {
+      if (debounce.current) {
+        clearTimeout(debounce.current);
+      }
+
+      debounce.current = setTimeout(() => {
+        console.log("divRef.current.clientWidth", divRef.current.clientWidth);
+        setDivWidth(divRef.current.clientWidth);
+      }, 100);
+    };
+
+    const clearEv = optimizeAnimation(handleResize);
+    window.addEventListener("resize", clearEv);
+    return () => {
+      // cleanup
+      window.removeEventListener("resize", clearEv);
+    };
+  }, []);
 
   return (
     <div>
@@ -189,7 +226,9 @@ const Main = () => {
         </div>
       </div>
       <div className="deth-Chart-Container">
-        <DeathChart></DeathChart>
+        <div ref={divRef}>
+          <DeathChart divWidth={divWidth}></DeathChart>
+        </div>
       </div>
       {/* <div>
         {apiData &&

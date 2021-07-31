@@ -6,138 +6,281 @@ const LineSvg = styled.svg`
   overflow: unset;
   border-top: 1px solid;
   border-left: 1px solid;
-  background-color: rgba(127, 140, 141, 0.5);
 
   width: 100%;
-
   ${({ h }) =>
     h &&
     css`
       height: ${h}px;
     `}
+
+  .point {
+    cursor: pointer;
+  }
 `;
 
-const optimizeAnimation = (callback) => {
-  let ticking = false;
-  return (e) => {
-    if (!ticking) {
-      ticking = true;
-      requestAnimationFrame(() => {
-        callback(e);
-        ticking = false;
-      });
-    }
+const DeathChart = ({ divWidth }) => {
+  const data = [
+    { index: 0, value: 0, date: "02월 01일" },
+    { index: 1, value: 5, date: "02월 02일" },
+    { index: 2, value: 55, date: "02월 03일" },
+    { index: 3, value: 25, date: "02월 04일" },
+    { index: 4, value: 35, date: "02월 05일" },
+    { index: 5, value: 10, date: "02월 06일" },
+    { index: 6, value: 85, date: "02월 07일" },
+  ];
+
+  const [testData, setTestData] = useState(data);
+
+  const svgRef = useRef(null);
+
+  const chartSize = {
+    w: divWidth,
+    h: 300,
   };
-};
 
-const DeathChart = ({ deathCnt }) => {
-  const [lineData, setLineData] = useState([0, 5, 34, 22, 50, 100, 70, 30]);
-  const [lineDate, setLineDate] = useState(["02월 01일", "02월 02일", "02월 03일", "02월 04일", "02월 05일", "02월 06일", "02월 07일", "02월 08일"]);
-  const [w, setW] = useState(700);
-  const [h, setH] = useState(150);
-
-  const lineRef = useRef(null);
+  // 첫 랜더때 state가 결정되어있다
+  // null값을내려주는데
+  //추후 부모쪽에서 props를 내려주는데도 초기화가안된다
+  // props변경시 useState는 어떻게 작동하는지 알아봐야한다.
+  // const [chartSize, setChartSize] = useState({
+  //   w: divWidth,
+  //   h: 500,
+  // });
 
   const render = (data) => {
-    const svgLine = d3.select(lineRef.current);
+    const svgLine = d3.select(svgRef.current);
 
+    //x축 크기
     const xScale = d3
       .scaleLinear()
-      .domain([0, lineData.length - 1])
-      .range([0, w]);
-
+      .domain([0, data.length - 1])
+      .range([0, chartSize.w]);
     const xAxis = d3
       .axisBottom(xScale)
-      .ticks(lineData.length)
-      .tickFormat((index) => {
-        return lineDate[index];
-      })
+      // .tickSize(h)
+      .ticks(data.length)
+      //tickFormat에 들어오는 index는 ticks에서 넣어준 인자 값이다.
+      .tickFormat((index) => data[index].date)
       .tickPadding(10);
-
-    svgLine.select(".x-axis").style("transform", `translateY(${h}px)`).call(xAxis);
+    svgLine.select(".x-axis").style("transform", `translateY(${chartSize.h}px)`).call(xAxis);
 
     //domain 실제 값 범위
     //range 변환하고 싶은 비율
-    const yScale = d3.scaleLinear().domain([0, 100]).range([h, 0]);
+    //y축 크기
 
-    //ticks 쪼개는 단위
-    const yAxis = d3.axisRight(yScale).ticks(10).tickPadding(10);
+    // y축으로 표시 될 데이터 min,max를 구 해 준다
+    // const Ydamain = d3.extent(data, (item) => item.value);
+    // const yScale = d3.scaleLinear().domain(Ydamain).range([h, 0]);
+    const YdamainMax = d3.max(data, (item) => item.value);
+    const yScale = d3
+      .scaleLinear()
+      // 50을 추가해주는 이유는 그래프를 편히 보여주기 위해서이다.
+      .domain([0, YdamainMax + 50])
+      .range([chartSize.h, 0]);
+    // const yAxis = d3.axisLeft(yScale).tickSize(-w).tickPadding(20);
+    const yAxis = d3
+      .axisRight(yScale)
+      // .tickSize(w)
+      .tickPadding(10)
+      //데이터를 더 세분화해서 보여주기위해
+      .ticks(YdamainMax / 2);
+    // y축 데이터 표현 갯수
+    svgLine.select(".y-axis").style("transform", `translateX(${chartSize.w}px)`).call(yAxis);
 
-    svgLine.select(".y-axis").style("transform", `translateX(${w}px)`).call(yAxis);
-
-    // x 좌표
-    // y 좌표
+    //path태그 d속성 계산
     const myLine = d3
       .line()
-      .x((value, index) => xScale(index))
-      .y(yScale)
-      .curve(d3.curveBasis);
+      .x((d) => xScale(d.index))
+      .y((d) => yScale(d.value));
 
     svgLine
       .selectAll(".line")
-      .data([lineData])
+      .data([data])
       .join("path")
       .attr("class", "line")
-      .attr("d", (value) => myLine(value))
+      .attr("d", (d) => myLine(d))
       .attr("fill", "none")
       .attr("stroke", "blue");
+
+    //================================ circles =============================//
+    const groups = svgLine.selectAll(".point").data(data);
+    // g태그 > circle , text
+
+    //update 패턴쪽에서 append하는 실수 하지말자
+    const updateCircle = groups.select(".point-circle");
+    const updateText = groups.select(".textValue");
+
+    updateCircle
+      .attr("class", "point-circle")
+      .attr("r", "4")
+      .attr("cx", (d) => xScale(d.index))
+      .attr("cy", (d) => yScale(d.value))
+      .attr("fill", "#fff")
+      .attr("stroke", "#000")
+      .attr("stroke-width", 2)
+      .on("mouseover", (event, date) => {
+        const { target } = event;
+        d3.select(target.nextSibling)
+          .transition()
+          .duration(200)
+          .style("opacity", 1)
+          .style("font-weight", "bold")
+          .attr("y", (d) => yScale(d.value) - 15);
+        d3.select(target).transition().duration(100).attr("r", 8).attr("fill", "#fff");
+      })
+      .on("mouseleave", (event, date) => {
+        const { target } = event;
+        d3.select(target.nextSibling)
+          .transition()
+          .duration(200)
+          .style("opacity", 0)
+          .attr("y", (d) => yScale(d.value) - 20);
+        d3.select(target).transition().duration(100).attr("r", 4).attr("fill", "#fff");
+      });
+
+    updateText
+      .text((d) => d.value)
+      .attr("x", (d) => xScale(d.index))
+      .attr("class", "textValue")
+      .attr("y", (d) => yScale(d.value) - 10)
+      .style("color", "#222")
+      .style("font-size", "0.85em")
+      .attr("text-anchor", "middle");
+    //새로운 g태그 생성 시
+
+    // =========================== g태그 insert ============================//
+    const enter = groups.enter().append("g").attr("class", "point");
+
+    enter
+      .append("circle")
+      .attr("class", "point-circle")
+      .attr("r", "4")
+      .attr("cx", (d) => xScale(d.index))
+      .attr("cy", (d) => yScale(d.value))
+      .attr("fill", "#fff")
+      .attr("stroke", "#000")
+      .attr("stroke-width", 2)
+      .on("mouseover", (event, date) => {
+        const { target } = event;
+        d3.select(target.nextSibling)
+          .transition()
+          .duration(200)
+          .style("opacity", 1)
+          .style("font-weight", "bold")
+          .attr("y", (d) => yScale(d.value) - 15);
+        d3.select(target).transition().duration(100).attr("r", 8).attr("fill", "#fff");
+      })
+      .on("mouseleave", (event, date) => {
+        const { target } = event;
+        d3.select(target.nextSibling)
+          .transition()
+          .duration(200)
+          .style("opacity", 0)
+          .attr("y", (d) => yScale(d.value) - 20);
+        d3.select(target).transition().duration(100).attr("r", 4).attr("fill", "#fff");
+      });
+
+    enter
+      .append("text")
+      .text((d) => d.value)
+      .attr("class", "textValue")
+      .attr("x", (d) => xScale(d.index))
+      .attr("y", (d) => yScale(d.value) - 20)
+      .style("color", "#222")
+      .style("font-size", "0.85em")
+      .style("opacity", 0)
+      .attr("text-anchor", "middle");
+
+    // =========================== g태그 insert ============================//
+
+    // ============================== exit ================================//
+    groups.exit().remove();
+    // ============================== exit ================================//
+
+    //================================ circles =============================//
+
+    svgLine
+      .select(".yyyy")
+      .datum("날짜 : 2021년")
+      .text((d) => d)
+      .attr("y", "-10")
+      .attr("font-weight", "bold");
+
+    // new Date형식 바꿔준다.
+    // const parseDate = d3.timeFormat("%Y-%m-%d");
+
+    // g태그 안쓸때
+    // const circles = svgLine.selectAll(".point").data(data);
+
+    // circles.exit().remove();
+    // //update 패턴쪽에서 append하는 실수 하지말자
+    // circles
+    //   .attr("class", "point")
+    //   .attr("r", "4")
+    //   .attr("cx", (d) => xScale(d.index))
+    //   .attr("cy", (d) => yScale(d.value))
+    //   .attr("fill", "#ccc")
+    //   .attr("stroke", "#000")
+    //   .attr("stroke-width", 2);
+
+    // circles
+    //   .enter()
+    //   .append("g")
+    //   .append("circle")
+    //   .attr("class", "point")
+    //   .attr("r", "4")
+    //   .attr("cx", (d) => xScale(d.index))
+    //   .attr("cy", (d) => yScale(d.value))
+    //   .attr("fill", "#ccc")
+    //   .attr("stroke", "#000")
+    //   .attr("stroke-width", 2);
   };
 
   useEffect(() => {
-    render(lineData);
-  }, [lineData, lineDate]);
-
-  // const debounce = useRef(null);
-  // const [chartSize, setChartSize] = useState({
-  //   w: 778,
-  //   h: 400,
-  // });
-
-  // useEffect(() => {
-  //   setChartSize({
-  //     w: svgRef.current.clientWidth,
-  //     h: chartSize.h,
-  //   });
-
-  //   const handleResize = () => {
-  //     if (debounce.current) {
-  //       clearTimeout(debounce.current);
-  //     }
-
-  //     debounce.current = setTimeout(() => {
-  //       setChartSize({
-  //         w: svgRef.current.clientWidth,
-  //         h: chartSize.h,
-  //       });
-  //     }, 100);
-  //   };
-
-  //   const clearEv = optimizeAnimation(handleResize);
-  //   window.addEventListener("resize", clearEv);
-  //   return () => {
-  //     // cleanup
-  //     window.removeEventListener("resize", clearEv);
-  //   };
-  // }, []);
+    render(testData);
+  });
 
   return (
-    <div>
-      <LineSvg ref={lineRef} width={w} height={h}>
+    <>
+      <LineSvg ref={svgRef} width={chartSize.w} height={chartSize.h}>
         <g className="x-axis"></g>
         <g className="y-axis"></g>
+        <text className="yyyy" />
       </LineSvg>
 
-      <div>
+      <div style={{ marginTop: "50px" }}>
         <button
           onClick={() => {
-            setLineData([1, 2, 55, 8, 9, 35]);
-            setLineDate(["02월 01일", "02월 02일", "02월 03일", "02월 04일", "02월 05일", "02월 06일"]);
+            setTestData([
+              { index: 0, value: 22, date: "02월 01일" },
+              { index: 1, value: 5, date: "02월 02일" },
+              { index: 2, value: 34, date: "02월 03일" },
+              { index: 3, value: 66, date: "02월 04일" },
+              { index: 4, value: 5, date: "02월 05일" },
+              { index: 5, value: 5, date: "02월 07일" },
+              { index: 6, value: 4, date: "02월 08일" },
+              { index: 7, value: 0, date: "02월 09일" },
+              { index: 8, value: 0, date: "02월 10일" },
+            ]);
           }}
         >
           데이터1
         </button>
+        <button
+          onClick={() => {
+            setTestData([
+              { index: 0, value: 22, date: "02월 01일" },
+              { index: 1, value: 52, date: "02월 02일" },
+              { index: 2, value: 52, date: "02월 03일" },
+              { index: 3, value: 52, date: "02월 03일" },
+            ]);
+          }}
+        >
+          데이터2
+        </button>
       </div>
-    </div>
+    </>
   );
 };
 
