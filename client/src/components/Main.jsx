@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import DeathChart from "./DeathChart";
 import axios from "axios";
 import "scss/main.scss";
-// import { ImgLoding } from "./styled";
+import { ImgLoding } from "./styled";
 
 import { Title } from "./styled";
 
@@ -92,51 +92,22 @@ const validation = (data) => {
 const getToday = () => {
   const day = new Date();
   const yyyy = day.getFullYear();
-  const mm = day.getMonth();
-  const dd = day.getDate() - 1;
+  const mm = `${day.getMonth() + 1}`.padStart(2, "0");
+  const dd = `${day.getDate()}`.padStart(2, "0");
 
-  const toDay = `${yyyy}-0${mm + 1}-${dd}`;
-  return toDay;
+  const toDay = `${yyyy}-${mm}-${dd}`;
+
+  return { startData: toDay, endData: toDay };
 };
 
-const initialValue = {
-  startData: getToday(),
-  endData: getToday(),
-};
-
-// 테스트 데이터
-const _apiData = {
-  items: {
-    item: [
-      {
-        accDefRate: 1.7272765905,
-        accExamCnt: 11637506,
-        accExamCompCnt: 11295180,
-        careCnt: 21455,
-        clearCnt: 171559,
-        createDt: "2021-07-29 09:37:41.356",
-        deathCnt: 2085,
-        decideCnt: 195099,
-        examCnt: 342326,
-        resutlNegCnt: 11100081,
-        seq: 587,
-        stateDt: 20210729,
-        stateTime: "00:00",
-        updateDt: "null",
-      },
-    ],
-  },
-};
-//부모엣 props로 넘겨줘도 반응되지않는다
 const Main = () => {
-  // const [apiData, setApiData] = useState(null);
-  const [apiData, setApiData] = useState(_apiData);
+  const [apiData, setApiData] = useState([]);
   const debounce = useRef(false);
-  const [data, setData] = useState(initialValue);
-  const divRef = useRef(null);
+  const [data, setData] = useState(getToday());
   const [divWidth, setDivWidth] = useState(null);
-  const startInput = useRef();
-  const endInput = useRef();
+  const divRef = useRef(null);
+  const startInput = useRef(null);
+  const endInput = useRef(null);
   const isShow = useRef(true);
 
   const handleClick = () => {
@@ -159,33 +130,48 @@ const Main = () => {
   useEffect(() => {
     console.log("Api Call");
 
-    // const callApi = async ({ startData, endData }) => {
-    //   try {
-    //     return await axios.post("/api/covid-19", {
-    //       params: {
-    //         pageNo: 1,
-    //         numOfRows: 10,
-    //         startCreateDt: startData,
-    //         endCreateDt: endData,
-    //       },
-    //     });
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // };
+    const callApi = async ({ startData, endData }) => {
+      try {
+        return await axios.post("/api/covid-19", {
+          params: {
+            pageNo: 1,
+            numOfRows: 10,
+            startCreateDt: startData,
+            endCreateDt: endData,
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-    // callApi(hyphenRemove(data)).then((res) => {
-    //   const { body } = res.data;
-    //   console.log(body);
-    //   setTimeout(() => {
-    //     isShow.current = false;
-    //     setApiData(body);
-    //   }, 1000);
-    // });
+    callApi(hyphenRemove(data)).then((res) => {
+      console.log(res);
+      const { header } = res.data;
+
+      setTimeout(() => {
+        isShow.current = false;
+        if (header.resultCode !== 99) {
+          const { body } = res.data;
+          const { items } = body;
+          const { item } = items;
+
+          if (Array.isArray(item)) {
+            setApiData(item);
+            console.log("array", items);
+          } else {
+            console.log("object", items);
+            setApiData([item]);
+          }
+        } else if (header.resultCode === 99) {
+          alert(`${header.resultMsg}`);
+          setApiData([]);
+        }
+      }, 1000);
+    });
   }, [data]);
 
   useLayoutEffect(() => {
-    console.log(divRef.current.clientWidth);
     setDivWidth(divRef.current.clientWidth);
     const handleResize = () => {
       if (debounce.current) {
@@ -193,13 +179,13 @@ const Main = () => {
       }
 
       debounce.current = setTimeout(() => {
-        console.log("divRef.current.clientWidth", divRef.current.clientWidth);
         setDivWidth(divRef.current.clientWidth);
       }, 100);
     };
 
     const clearEv = optimizeAnimation(handleResize);
     window.addEventListener("resize", clearEv);
+
     return () => {
       // cleanup
       window.removeEventListener("resize", clearEv);
@@ -209,7 +195,7 @@ const Main = () => {
   return (
     <div>
       <Title>코로나 현황을 시각화로 확인해보세요.</Title>
-      {/* {isShow.current && <ImgLoding />} */}
+      {isShow.current && <ImgLoding />}
       <div>
         <div className="covid--search">
           <div className="covid--apiCall">
@@ -227,22 +213,9 @@ const Main = () => {
       </div>
       <div className="deth-Chart-Container">
         <div ref={divRef}>
-          <DeathChart divWidth={divWidth}></DeathChart>
+          <DeathChart divWidth={divWidth} items={apiData}></DeathChart>
         </div>
       </div>
-      {/* <div>
-        {apiData &&
-          apiData.items.item.map((object) => {
-            return (
-              <div key={object.seq}>
-                <div>{object.stateDt}</div>
-                <div>{object.accDefRate}</div>
-                <div>{object.accExamCompCnt}</div>
-                <div>{object.createDt}</div>
-              </div>
-            );
-          })}
-      </div> */}
     </div>
   );
 };

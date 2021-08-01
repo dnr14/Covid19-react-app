@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import * as d3 from "d3";
+import { ticks } from "d3";
 
 const LineSvg = styled.svg`
   overflow: unset;
@@ -19,74 +20,103 @@ const LineSvg = styled.svg`
   }
 `;
 
-const DeathChart = ({ divWidth }) => {
-  const data = [
-    { index: 0, value: 0, date: "02월 01일" },
-    { index: 1, value: 5, date: "02월 02일" },
-    { index: 2, value: 55, date: "02월 03일" },
-    { index: 3, value: 25, date: "02월 04일" },
-    { index: 4, value: 35, date: "02월 05일" },
-    { index: 5, value: 10, date: "02월 06일" },
-    { index: 6, value: 85, date: "02월 07일" },
-  ];
+// 테스트 데이터
+const _apiData = [
+  {
+    createDt: "2021-07-29 09:37:41.356",
+    deathCnt: 2085,
+  },
+  {
+    createDt: "2021-07-30 09:37:41.356",
+    deathCnt: 2085,
+  },
+  {
+    createDt: "2021-07-31 09:37:41.356",
+    deathCnt: 2085,
+  },
+  {
+    createDt: "2021-08-01 09:37:41.356",
+    deathCnt: 2085,
+  },
+  {
+    createDt: "2021-08-02 09:37:41.356",
+    deathCnt: 2095,
+  },
+  {
+    createDt: "2021-08-03 09:37:41.356",
+    deathCnt: 2025,
+  },
+];
 
-  const [testData, setTestData] = useState(data);
+// const _apiData = [
+//   {
+//     createDt: "2021-07-29 09:37:41.356",
+//     deathCnt: 2085,
+//   },
+//   {
+//     createDt: "2021-08-03 09:37:41.356",
+//     deathCnt: 2025,
+//   },
+//   {
+//     createDt: "2021-08-05 09:37:41.356",
+//     deathCnt: 2025,
+//   },
+// ];
 
+const DeathChart = ({ divWidth, items }) => {
+  const [apiData, setApiData] = useState(items);
   const svgRef = useRef(null);
-
-  const chartSize = {
+  const deathChartSize = {
     w: divWidth,
     h: 300,
   };
 
-  // 첫 랜더때 state가 결정되어있다
-  // null값을내려주는데
-  //추후 부모쪽에서 props를 내려주는데도 초기화가안된다
-  // props변경시 useState는 어떻게 작동하는지 알아봐야한다.
-  // const [chartSize, setChartSize] = useState({
-  //   w: divWidth,
-  //   h: 500,
-  // });
-
   const render = (data) => {
     const svgLine = d3.select(svgRef.current);
-
     //x축 크기
+    const pars = d3.timeFormat("%m월 %d일");
+
+    const ticksAndDomainMaxLenhth = data.length - 1;
     const xScale = d3
       .scaleLinear()
-      .domain([0, data.length - 1])
-      .range([0, chartSize.w]);
+      //domain 실제 값 범위
+      .domain([0, ticksAndDomainMaxLenhth])
+      //range 변환하고 싶은 비율
+      .range([0, deathChartSize.w]);
     const xAxis = d3
       .axisBottom(xScale)
-      // .tickSize(h)
-      .ticks(data.length)
+      .tickSize(-deathChartSize.h)
       //tickFormat에 들어오는 index는 ticks에서 넣어준 인자 값이다.
-      .tickFormat((index) => data[index].date)
+
+      // 0이 들어오면 text를 안쓴다
+      .ticks(ticksAndDomainMaxLenhth === 0 ? 1 : ticksAndDomainMaxLenhth)
+      .tickFormat((index) => pars(new Date(data[index].date)))
       .tickPadding(10);
-    svgLine.select(".x-axis").style("transform", `translateY(${chartSize.h}px)`).call(xAxis);
 
-    //domain 실제 값 범위
-    //range 변환하고 싶은 비율
+    svgLine.select(".x-axis").style("transform", `translateY(${deathChartSize.h}px)`).call(xAxis);
+
     //y축 크기
-
     // y축으로 표시 될 데이터 min,max를 구 해 준다
     // const Ydamain = d3.extent(data, (item) => item.value);
     // const yScale = d3.scaleLinear().domain(Ydamain).range([h, 0]);
     const YdamainMax = d3.max(data, (item) => item.value);
+    const YdamainMin = d3.min(data, (item) => item.value);
     const yScale = d3
       .scaleLinear()
       // 50을 추가해주는 이유는 그래프를 편히 보여주기 위해서이다.
-      .domain([0, YdamainMax + 50])
-      .range([chartSize.h, 0]);
+      // .domain([YdamainMin - 50, YdamainMax + 50])
+      .domain([YdamainMin - 50, YdamainMax + 50])
+      .range([deathChartSize.h, 0]);
     // const yAxis = d3.axisLeft(yScale).tickSize(-w).tickPadding(20);
     const yAxis = d3
       .axisRight(yScale)
       // .tickSize(w)
-      .tickPadding(10)
-      //데이터를 더 세분화해서 보여주기위해
-      .ticks(YdamainMax / 2);
+      .tickPadding(10);
+    //데이터를 더 세분화해서 보여주기위해
+    // .ticks(YdamainMax / 2);
+    ticks(10);
     // y축 데이터 표현 갯수
-    svgLine.select(".y-axis").style("transform", `translateX(${chartSize.w}px)`).call(yAxis);
+    svgLine.select(".y-axis").style("transform", `translateX(${deathChartSize.w}px)`).call(yAxis);
 
     //path태그 d속성 계산
     const myLine = d3
@@ -94,16 +124,28 @@ const DeathChart = ({ divWidth }) => {
       .x((d) => xScale(d.index))
       .y((d) => yScale(d.value));
 
-    svgLine
+    const pathDrawTime = 2000;
+    const pathDrawDelayTime = 200;
+    // 트랜지션 생성
+    const transitionPath = d3.transition().ease(d3.easeSin).duration(pathDrawTime).delay(pathDrawDelayTime);
+
+    const path = svgLine
       .selectAll(".line")
       .data([data])
       .join("path")
       .attr("class", "line")
       .attr("d", (d) => myLine(d))
       .attr("fill", "none")
-      .attr("stroke", "blue");
+      .attr("stroke", "blue")
+      .attr("stroke-width", 3);
+    const pathLength = path.node().getTotalLength();
 
+    // 라인 그리는 트랜지션 추가
+    //시작점을 0으로 만들어줘서 마치 선이 생성되는 애니메이션을 얻을 수 있다.
+    path.attr("stroke-dashoffset", pathLength).attr("stroke-dasharray", pathLength).transition(transitionPath).attr("stroke-dashoffset", 0);
     //================================ circles =============================//
+
+    // =========================== update 패턴 시작 ============================//
     const groups = svgLine.selectAll(".point").data(data);
     // g태그 > circle , text
 
@@ -119,7 +161,7 @@ const DeathChart = ({ divWidth }) => {
       .attr("fill", "#fff")
       .attr("stroke", "#000")
       .attr("stroke-width", 2)
-      .on("mouseover", (event, date) => {
+      .on("mouseover", (event) => {
         const { target } = event;
         d3.select(target.nextSibling)
           .transition()
@@ -129,7 +171,7 @@ const DeathChart = ({ divWidth }) => {
           .attr("y", (d) => yScale(d.value) - 15);
         d3.select(target).transition().duration(100).attr("r", 8).attr("fill", "#fff");
       })
-      .on("mouseleave", (event, date) => {
+      .on("mouseleave", (event) => {
         const { target } = event;
         d3.select(target.nextSibling)
           .transition()
@@ -147,11 +189,13 @@ const DeathChart = ({ divWidth }) => {
       .style("color", "#222")
       .style("font-size", "0.85em")
       .attr("text-anchor", "middle");
-    //새로운 g태그 생성 시
 
-    // =========================== g태그 insert ============================//
+    // // =========================== update 패턴 끝 ============================//
+
+    // // =========================== enter 패턴 시작 ============================//
     const enter = groups.enter().append("g").attr("class", "point");
 
+    // line 차트 서클 생성
     enter
       .append("circle")
       .attr("class", "point-circle")
@@ -161,7 +205,7 @@ const DeathChart = ({ divWidth }) => {
       .attr("fill", "#fff")
       .attr("stroke", "#000")
       .attr("stroke-width", 2)
-      .on("mouseover", (event, date) => {
+      .on("mouseover", (event) => {
         const { target } = event;
         d3.select(target.nextSibling)
           .transition()
@@ -171,7 +215,7 @@ const DeathChart = ({ divWidth }) => {
           .attr("y", (d) => yScale(d.value) - 15);
         d3.select(target).transition().duration(100).attr("r", 8).attr("fill", "#fff");
       })
-      .on("mouseleave", (event, date) => {
+      .on("mouseleave", (event) => {
         const { target } = event;
         d3.select(target.nextSibling)
           .transition()
@@ -181,6 +225,7 @@ const DeathChart = ({ divWidth }) => {
         d3.select(target).transition().duration(100).attr("r", 4).attr("fill", "#fff");
       });
 
+    // line 차트 텍스트 생성
     enter
       .append("text")
       .text((d) => d.value)
@@ -192,19 +237,26 @@ const DeathChart = ({ divWidth }) => {
       .style("opacity", 0)
       .attr("text-anchor", "middle");
 
-    // =========================== g태그 insert ============================//
+    // // =========================== enter 패턴 끝 ============================//
 
-    // ============================== exit ================================//
+    // // ============================== exit 패턴 시작 ================================//
     groups.exit().remove();
-    // ============================== exit ================================//
+    // // ============================== exit 패턴 시작 끝 ================================//
 
-    //================================ circles =============================//
-
+    // //================================ circles 끝=============================//
     svgLine
       .select(".yyyy")
       .datum("날짜 : 2021년")
       .text((d) => d)
       .attr("y", "-10")
+      .attr("font-weight", "bold");
+
+    svgLine
+      .select(".title")
+      .datum("코로나 사망자 현황")
+      .text((d) => d)
+      .attr("y", "-20")
+      .attr("x", `${deathChartSize.w / 2 - 65}`)
       .attr("font-weight", "bold");
 
     // new Date형식 바꿔준다.
@@ -238,48 +290,28 @@ const DeathChart = ({ divWidth }) => {
   };
 
   useEffect(() => {
-    render(testData);
-  });
+    if (apiData.length !== 0) {
+      const data = apiData
+        .sort((a, b) => (new Date(a.createDt) > new Date(b.createDt) ? 1 : -1))
+        .map((object, idx) => {
+          return { index: idx, value: object.deathCnt, date: object.createDt };
+        });
+      render(data);
+    }
+  }, [apiData, divWidth]);
+
+  useEffect(() => {
+    setApiData(items);
+  }, [items]);
 
   return (
     <>
-      <LineSvg ref={svgRef} width={chartSize.w} height={chartSize.h}>
+      <LineSvg ref={svgRef} width={deathChartSize.w} height={deathChartSize.h}>
         <g className="x-axis"></g>
         <g className="y-axis"></g>
         <text className="yyyy" />
+        <text className="title" />
       </LineSvg>
-
-      <div style={{ marginTop: "50px" }}>
-        <button
-          onClick={() => {
-            setTestData([
-              { index: 0, value: 22, date: "02월 01일" },
-              { index: 1, value: 5, date: "02월 02일" },
-              { index: 2, value: 34, date: "02월 03일" },
-              { index: 3, value: 66, date: "02월 04일" },
-              { index: 4, value: 5, date: "02월 05일" },
-              { index: 5, value: 5, date: "02월 07일" },
-              { index: 6, value: 4, date: "02월 08일" },
-              { index: 7, value: 0, date: "02월 09일" },
-              { index: 8, value: 0, date: "02월 10일" },
-            ]);
-          }}
-        >
-          데이터1
-        </button>
-        <button
-          onClick={() => {
-            setTestData([
-              { index: 0, value: 22, date: "02월 01일" },
-              { index: 1, value: 52, date: "02월 02일" },
-              { index: 2, value: 52, date: "02월 03일" },
-              { index: 3, value: 52, date: "02월 03일" },
-            ]);
-          }}
-        >
-          데이터2
-        </button>
-      </div>
     </>
   );
 };
