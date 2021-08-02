@@ -1,32 +1,18 @@
-import { Row, Col, HeaderContainer, FloxBox, MainCatiner } from "components/styled";
 import Header from "components/Header";
 import Main from "components/Main";
-import { MaxWidthConatiner } from "components/styled";
+import Home from "components/Home";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 
 function App() {
   return (
-    <>
-      <HeaderContainer>
-        <Row>
-          <Col>
-            <MaxWidthConatiner>
-              <FloxBox>
-                <Header />
-              </FloxBox>
-            </MaxWidthConatiner>
-          </Col>
-        </Row>
-      </HeaderContainer>
-      <MainCatiner>
-        <Row>
-          <Col>
-            <MaxWidthConatiner>
-              <Main />
-            </MaxWidthConatiner>
-          </Col>
-        </Row>
-      </MainCatiner>
-    </>
+    <BrowserRouter>
+      <Header />
+
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route path="/main" component={Main} />
+      </Switch>
+    </BrowserRouter>
   );
 }
 

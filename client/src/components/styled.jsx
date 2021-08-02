@@ -14,7 +14,7 @@ const GlobalStyled = createGlobalStyle`
     margin: 0; 
   }
   html{
-    min-width: 500px;
+    min-width: 400px;
   }
 
   ol, ul {
@@ -26,11 +26,21 @@ const GlobalStyled = createGlobalStyle`
 
 export default GlobalStyled;
 
-export const MaxWidthConatiner = styled.div`
+// AppWrapper
+export const AppWrapper = styled.div`
+  &,
+  & * {
+    box-sizing: border-box;
+  }
+`;
+
+// 확대 했을때 무한대로 늘어나는거 방지
+// ============================ Container ============================
+export const MaxWidthContainer = styled.div`
   max-width: 1400px;
   margin: auto;
 `;
-
+// ============================ Loding ============================
 export const ImgLoding = styled.div`
   background: transparent;
   position: fixed;
@@ -41,18 +51,20 @@ export const ImgLoding = styled.div`
   background-image: url(${loding});
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 20%;
+  background-size: 200px;
+`;
+
+// ============================ Row or Col ============================
+const StyledRow = styled.div`
+  &::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
 `;
 
 export const Row = (props) => {
-  const Row = styled.div`
-    &::after {
-      content: "";
-      clear: both;
-      display: table;
-    }
-  `;
-  return <Row>{props.children}</Row>;
+  return <StyledRow>{props.children}</StyledRow>;
 };
 
 const calcWidthPercent = (span) => {
@@ -82,20 +94,8 @@ Col.defaultProps = {
   lg: 12,
 };
 
-// AppWrapper
-export const AppWrapper = styled.div`
-  &,
-  & * {
-    box-sizing: border-box;
-  }
-`;
-
-// Header
-export const HeaderContainer = styled.header`
-  background-color: #e74c3c;
-`;
-
-export const FloxBox = styled.div`
+// ============================ Header ============================
+export const FlexBox = styled.div`
   display: flex;
   flex-wrap: wrap;
   box-sizing: border-box;
@@ -114,7 +114,20 @@ export const FloxBox = styled.div`
       justify-content: space-between;
     `}
 
-    @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
+
+  .flex--item {
+    text-align: center;
+    width: 100%;
+    margin: 50px;
+    .flex--item-w50 {
+      box-sizing: border-box;
+      width: 50%;
+      padding: 0 20px;
+      display: inline-block;
+    }
+  }
+
+  @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
     & > div {
       justify-content: center;
       width: 100%;
@@ -124,22 +137,23 @@ export const FloxBox = styled.div`
       font-size: 1rem;
       text-align: center;
     }
+
     li {
       width: 100%;
+    }
+    .flex--item > .flex--item-w50 {
+      width: 100%;
+      padding: 0;
+      margin-top: 100px;
     }
   }
 `;
 
-FloxBox.defaultProps = {
+FlexBox.defaultProps = {
   position: "sb",
 };
 
-//Main
-export const MainCatiner = styled.section`
-  max-width: 1400px;
-  margin: auto;
-`;
-
+// ============================ Main ============================
 export const Title = styled.div`
   padding: 10px;
   text-align: center;
@@ -149,3 +163,33 @@ export const Title = styled.div`
     font-size: 1.5rem;
   }
 `;
+
+// ============================ Death chart ============================
+export const LineSvg = styled.svg`
+  overflow: unset;
+  border-top: 1px solid;
+  border-left: 1px solid;
+  border: 1px solid;
+
+  ${({ h }) =>
+    h &&
+    css`
+      height: ${h}px;
+    `}
+
+  .point {
+    cursor: pointer;
+  }
+
+  line {
+    color: rgba(189, 195, 199, 0.5);
+  }
+
+  @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
+    text {
+      font-size: 0.8rem;
+    }
+  }
+`;
+
+// ============================ Home ============================

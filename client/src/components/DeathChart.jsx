@@ -1,70 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled, { css } from "styled-components";
+import { LineSvg } from "./styled";
 import * as d3 from "d3";
-import { ticks } from "d3";
-
-const LineSvg = styled.svg`
-  overflow: unset;
-  border-top: 1px solid;
-  border-left: 1px solid;
-
-  width: 100%;
-  ${({ h }) =>
-    h &&
-    css`
-      height: ${h}px;
-    `}
-
-  .point {
-    cursor: pointer;
-  }
-`;
-
-// 테스트 데이터
-const _apiData = [
-  {
-    createDt: "2021-07-29 09:37:41.356",
-    deathCnt: 2085,
-  },
-  {
-    createDt: "2021-07-30 09:37:41.356",
-    deathCnt: 2085,
-  },
-  {
-    createDt: "2021-07-31 09:37:41.356",
-    deathCnt: 2085,
-  },
-  {
-    createDt: "2021-08-01 09:37:41.356",
-    deathCnt: 2085,
-  },
-  {
-    createDt: "2021-08-02 09:37:41.356",
-    deathCnt: 2095,
-  },
-  {
-    createDt: "2021-08-03 09:37:41.356",
-    deathCnt: 2025,
-  },
-];
-
-// const _apiData = [
-//   {
-//     createDt: "2021-07-29 09:37:41.356",
-//     deathCnt: 2085,
-//   },
-//   {
-//     createDt: "2021-08-03 09:37:41.356",
-//     deathCnt: 2025,
-//   },
-//   {
-//     createDt: "2021-08-05 09:37:41.356",
-//     deathCnt: 2025,
-//   },
-// ];
 
 const DeathChart = ({ divWidth, items }) => {
-  const [apiData, setApiData] = useState(items);
+  // const [apiData, setApiData] = useState(items);
   const svgRef = useRef(null);
   const deathChartSize = {
     w: divWidth,
@@ -72,9 +11,15 @@ const DeathChart = ({ divWidth, items }) => {
   };
 
   const render = (data) => {
+    const yPreprocessing = data.map((object) => `${new Date(object.date).getFullYear()}년`);
+    const mPreprocessing = data.map((object) => `${new Date(object.date).getMonth() + 1}월`);
+    const monthArticle = new Set(mPreprocessing);
+    const yearArticle = new Set(yPreprocessing);
+    const colorBarColors = ["#e74c3c", "#2980b9"];
+
     const svgLine = d3.select(svgRef.current);
     //x축 크기
-    const pars = d3.timeFormat("%m월 %d일");
+    const pars = d3.timeFormat("%d일");
 
     const ticksAndDomainMaxLenhth = data.length - 1;
     const xScale = d3
@@ -93,7 +38,10 @@ const DeathChart = ({ divWidth, items }) => {
       .tickFormat((index) => pars(new Date(data[index].date)))
       .tickPadding(10);
 
-    svgLine.select(".x-axis").style("transform", `translateY(${deathChartSize.h}px)`).call(xAxis);
+    svgLine
+      .select(".x-axis")
+      .style("transform", `translateY(${deathChartSize.h - 1}px)`)
+      .call(xAxis);
 
     //y축 크기
     // y축으로 표시 될 데이터 min,max를 구 해 준다
@@ -104,19 +52,21 @@ const DeathChart = ({ divWidth, items }) => {
     const yScale = d3
       .scaleLinear()
       // 50을 추가해주는 이유는 그래프를 편히 보여주기 위해서이다.
-      // .domain([YdamainMin - 50, YdamainMax + 50])
       .domain([YdamainMin - 50, YdamainMax + 50])
       .range([deathChartSize.h, 0]);
-    // const yAxis = d3.axisLeft(yScale).tickSize(-w).tickPadding(20);
+
     const yAxis = d3
       .axisRight(yScale)
-      // .tickSize(w)
-      .tickPadding(10);
-    //데이터를 더 세분화해서 보여주기위해
-    // .ticks(YdamainMax / 2);
-    ticks(10);
+      .tickSize(-deathChartSize.w)
+      .tickPadding(10)
+      .tickFormat((d) => `${d}명`)
+      //데이터를 더 세분화해서 보여주기위해
+      .ticks(10);
     // y축 데이터 표현 갯수
-    svgLine.select(".y-axis").style("transform", `translateX(${deathChartSize.w}px)`).call(yAxis);
+    svgLine
+      .select(".y-axis")
+      .style("transform", `translateX(${deathChartSize.w - 1}px)`)
+      .call(yAxis);
 
     //path태그 d속성 계산
     const myLine = d3
@@ -136,7 +86,7 @@ const DeathChart = ({ divWidth, items }) => {
       .attr("class", "line")
       .attr("d", (d) => myLine(d))
       .attr("fill", "none")
-      .attr("stroke", "blue")
+      .attr("stroke", "#1abc9c")
       .attr("stroke-width", 3);
     const pathLength = path.node().getTotalLength();
 
@@ -153,13 +103,23 @@ const DeathChart = ({ divWidth, items }) => {
     const updateCircle = groups.select(".point-circle");
     const updateText = groups.select(".textValue");
 
+    let before;
+    const setCircleColor = (d, idx) => {
+      if (idx === 0) {
+        before = `${new Date(d.date).getMonth() + 1}월`;
+        return colorBarColors[0];
+      }
+      const currentColor = before === `${new Date(d.date).getMonth() + 1}월` ? colorBarColors[0] : colorBarColors[1];
+      return currentColor;
+    };
+
     updateCircle
       .attr("class", "point-circle")
-      .attr("r", "4")
+      .attr("r", "5")
       .attr("cx", (d) => xScale(d.index))
       .attr("cy", (d) => yScale(d.value))
       .attr("fill", "#fff")
-      .attr("stroke", "#000")
+      .attr("stroke", setCircleColor)
       .attr("stroke-width", 2)
       .on("mouseover", (event) => {
         const { target } = event;
@@ -182,7 +142,7 @@ const DeathChart = ({ divWidth, items }) => {
       });
 
     updateText
-      .text((d) => d.value)
+      .text((d) => `${d.value}명`)
       .attr("x", (d) => xScale(d.index))
       .attr("class", "textValue")
       .attr("y", (d) => yScale(d.value) - 10)
@@ -199,11 +159,11 @@ const DeathChart = ({ divWidth, items }) => {
     enter
       .append("circle")
       .attr("class", "point-circle")
-      .attr("r", "4")
+      .attr("r", "5")
       .attr("cx", (d) => xScale(d.index))
       .attr("cy", (d) => yScale(d.value))
       .attr("fill", "#fff")
-      .attr("stroke", "#000")
+      .attr("stroke", setCircleColor)
       .attr("stroke-width", 2)
       .on("mouseover", (event) => {
         const { target } = event;
@@ -228,7 +188,7 @@ const DeathChart = ({ divWidth, items }) => {
     // line 차트 텍스트 생성
     enter
       .append("text")
-      .text((d) => d.value)
+      .text((d) => `${d.value}명`)
       .attr("class", "textValue")
       .attr("x", (d) => xScale(d.index))
       .attr("y", (d) => yScale(d.value) - 20)
@@ -244,12 +204,61 @@ const DeathChart = ({ divWidth, items }) => {
     // // ============================== exit 패턴 시작 끝 ================================//
 
     // //================================ circles 끝=============================//
-    svgLine
-      .select(".yyyy")
-      .datum("날짜 : 2021년")
+
+    const textGroup = svgLine.select(".textGroup");
+    const yyyys = textGroup.selectAll(".yyyy").data(yearArticle);
+
+    // 년 표시
+    yyyys.text((d) => d);
+
+    yyyys
+      .enter()
+      .append("text")
       .text((d) => d)
-      .attr("y", "-10")
+      .attr("class", "yyyy")
+      .attr("y", (d, idx) => -(idx * 20) - 10)
       .attr("font-weight", "bold");
+
+    yyyys.exit().remove();
+
+    // 월 표시
+    const mms = textGroup.selectAll(".mm").data(monthArticle);
+    // 월 표시 컬러
+    const colorBars = textGroup.selectAll(".colorBar").data(monthArticle);
+
+    mms.text((d) => d);
+
+    mms
+      .enter()
+      .append("text")
+      .text((d) => d)
+      .attr("class", "mm")
+      .attr("x", "60")
+      .attr("y", (d, idx) => -(idx * 20) - 10)
+      .attr("font-weight", "bold");
+
+    mms.exit().remove();
+
+    colorBars
+
+      .attr("class", "colorBar")
+      .attr("x", "95")
+      .attr("y", (d, idx) => -(idx * 20) - 23)
+      .attr("width", "50")
+      .attr("height", "15")
+      .attr("fill", (d, idx) => colorBarColors[idx]);
+
+    colorBars
+      .enter()
+      .append("rect")
+      .attr("class", "colorBar")
+      .attr("y", (d, idx) => -(idx * 20) - 23)
+      .attr("x", "95")
+      .attr("width", "50")
+      .attr("height", "15")
+      .attr("fill", (d, idx) => colorBarColors[idx]);
+
+    colorBars.exit().remove();
 
     svgLine
       .select(".title")
@@ -261,56 +270,32 @@ const DeathChart = ({ divWidth, items }) => {
 
     // new Date형식 바꿔준다.
     // const parseDate = d3.timeFormat("%Y-%m-%d");
-
-    // g태그 안쓸때
-    // const circles = svgLine.selectAll(".point").data(data);
-
-    // circles.exit().remove();
-    // //update 패턴쪽에서 append하는 실수 하지말자
-    // circles
-    //   .attr("class", "point")
-    //   .attr("r", "4")
-    //   .attr("cx", (d) => xScale(d.index))
-    //   .attr("cy", (d) => yScale(d.value))
-    //   .attr("fill", "#ccc")
-    //   .attr("stroke", "#000")
-    //   .attr("stroke-width", 2);
-
-    // circles
-    //   .enter()
-    //   .append("g")
-    //   .append("circle")
-    //   .attr("class", "point")
-    //   .attr("r", "4")
-    //   .attr("cx", (d) => xScale(d.index))
-    //   .attr("cy", (d) => yScale(d.value))
-    //   .attr("fill", "#ccc")
-    //   .attr("stroke", "#000")
-    //   .attr("stroke-width", 2);
   };
 
   useEffect(() => {
-    if (apiData.length !== 0) {
-      const data = apiData
+    if (items.length !== 0) {
+      const data = items
         .sort((a, b) => (new Date(a.createDt) > new Date(b.createDt) ? 1 : -1))
         .map((object, idx) => {
           return { index: idx, value: object.deathCnt, date: object.createDt };
         });
       render(data);
+    } else {
     }
-  }, [apiData, divWidth]);
+  });
 
-  useEffect(() => {
-    setApiData(items);
-  }, [items]);
+  // useEffect(() => {
+  //   setApiData(items);
+  // }, [items]);
 
   return (
     <>
       <LineSvg ref={svgRef} width={deathChartSize.w} height={deathChartSize.h}>
         <g className="x-axis"></g>
         <g className="y-axis"></g>
-        <text className="yyyy" />
-        <text className="title" />
+        <g className="textGroup">
+          <text className="title" />
+        </g>
       </LineSvg>
     </>
   );

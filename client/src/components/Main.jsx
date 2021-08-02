@@ -1,36 +1,8 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
+import { ImgLoding, Title, Row, Col, MaxWidthContainer } from "./styled";
 import DeathChart from "./DeathChart";
 import axios from "axios";
 import "scss/main.scss";
-import { ImgLoding } from "./styled";
-
-import { Title } from "./styled";
-
-/*
-  // 요청
-  API PROPERY 정보
-  numOfRows 한페이지 결과 수 1
-  pageNo 페이지 번호 0
-  startCreateDt 데이터 생성일 시작범위 0
-  endCreateDe  데이터 생성일 종료범휘 0
-
-  // 응답 
-  totalCount 전체 결과 수 1
-  seq 고유 값 
-  startDt 기준일
-  startTime 기준시간
-  decideCnt 확진 자 수
-  clearCont 격리 해제 수
-  examCnt 검사 진행 수
-  deathCnt 사망자 수
-  careCnt 치료중 환자 수
-  resultLegcnt 결과 음성 수
-  accExamCnt 누적 검사 수
-  accExamCompCnt 누적 검사 완료
-  accDefRate 누적 확진률
-  createDt 등록일시분초
-  updateDt 수정일시분초
-*/
 
 const optimizeAnimation = (callback) => {
   let ticking = false;
@@ -70,45 +42,70 @@ const hyphenRemove = (data) => {
 const validation = (data) => {
   const isFalse = false;
 
+  const is7DayDifferenceChecked = (data) => {
+    const _7DayTime = 518400000;
+    const { startData, endData } = data;
+    const startTime = new Date(startData).getTime();
+    const endTime = new Date(endData).getTime();
+    const difference = endTime - startTime;
+
+    if (difference > _7DayTime) {
+      return true;
+    }
+    return false;
+  };
   const isDateCheck = (data) => Object.keys(data).reduce((acc, current) => data[acc] > data[current]);
   const isDataEmptyCheck = (data) => {
-    let isFalse = false;
     for (const key in data) {
       if (Object.hasOwnProperty.call(data, key)) {
-        if (data[key] === "") {
-          isFalse = true;
+        if (data[key] === "" || data[key] === undefined || data[key] === null) {
+          return true;
         }
       }
     }
-    return isFalse;
+    return false;
   };
 
-  if (isDateCheck(data) || isDataEmptyCheck(data)) {
+  if (is7DayDifferenceChecked(data) || isDateCheck(data) || isDataEmptyCheck(data)) {
     return !isFalse;
   }
   return isFalse;
 };
 
-const getToday = () => {
+const getDateStr = (date) => {
+  const yyyy = date.getFullYear();
+  const mm = `${date.getMonth() + 1}`.padStart(2, "0");
+  const dd = `${date.getDate() - 1}`.padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+const lastWeek = () => {
   const day = new Date();
-  const yyyy = day.getFullYear();
-  const mm = `${day.getMonth() + 1}`.padStart(2, "0");
-  const dd = `${day.getDate()}`.padStart(2, "0");
+  const dayOfMonth = day.getDate();
+  day.setDate(dayOfMonth - 6);
+  return getDateStr(day);
+};
 
-  const toDay = `${yyyy}-${mm}-${dd}`;
-
-  return { startData: toDay, endData: toDay };
+const getInitialDate = () => {
+  const toDay = new Date();
+  return { startData: lastWeek(), endData: getDateStr(toDay) };
 };
 
 const Main = () => {
   const [apiData, setApiData] = useState([]);
-  const debounce = useRef(false);
-  const [data, setData] = useState(getToday());
+  const [date, setDate] = useState(getInitialDate());
   const [divWidth, setDivWidth] = useState(null);
+  const debounce = useRef(false);
   const divRef = useRef(null);
   const startInput = useRef(null);
   const endInput = useRef(null);
   const isShow = useRef(true);
+  const isApiError = useRef(false);
+
+  const handleError = () => {
+    isShow.current = false;
+    setApiData([]);
+  };
 
   const handleClick = () => {
     const startValue = startInput.current.value;
@@ -117,18 +114,21 @@ const Main = () => {
     const currentDataObject = { [startInput.current.name]: startValue, [endInput.current.name]: endValue };
 
     if (validation(currentDataObject)) {
-      alert("날짜를 확인하세요.");
+      alert(" 날짜를 확인하세요. \n 최대 7일까지 \n 빈값 입력 확인");
       return;
     }
 
-    setData((prevData) => {
+    setDate((prevData) => {
       isShow.current = true;
-      return deepEquals(prevData, { ...data, ...currentDataObject });
+      if (isApiError.current) {
+        return { ...prevData };
+      }
+      return deepEquals(prevData, { ...date, ...currentDataObject });
     });
   };
 
   useEffect(() => {
-    console.log("Api Call");
+    console.debug("💥💥 Api Call 💥💥");
 
     const callApi = async ({ startData, endData }) => {
       try {
@@ -142,34 +142,32 @@ const Main = () => {
         });
       } catch (error) {
         console.error(error);
+        return error;
       }
     };
 
-    callApi(hyphenRemove(data)).then((res) => {
-      console.log(res);
-      const { header } = res.data;
-
-      setTimeout(() => {
-        isShow.current = false;
-        if (header.resultCode !== 99) {
-          const { body } = res.data;
-          const { items } = body;
-          const { item } = items;
-
-          if (Array.isArray(item)) {
-            setApiData(item);
-            console.log("array", items);
-          } else {
-            console.log("object", items);
-            setApiData([item]);
+    callApi(hyphenRemove(date)).then((res) => {
+      if (res instanceof Error) {
+        handleError();
+        return;
+      } else {
+        const { header } = res.data;
+        setTimeout(() => {
+          isShow.current = false;
+          if (header.resultCode === "00") {
+            const { item = [] } = res.data?.body?.items;
+            // 12시 막 지나면 업데이트가 안되어있으면 공백으로 넘어온다.
+            if (isApiError.current) isApiError.current = false;
+            Array.isArray(item) ? setApiData(item) : setApiData([item]);
+          } else if (header.resultCode === 99) {
+            alert(`${header.resultMsg}`);
+            isApiError.current = true;
+            setApiData([]);
           }
-        } else if (header.resultCode === 99) {
-          alert(`${header.resultMsg}`);
-          setApiData([]);
-        }
-      }, 1000);
+        }, 1000);
+      }
     });
-  }, [data]);
+  }, [date]);
 
   useLayoutEffect(() => {
     setDivWidth(divRef.current.clientWidth);
@@ -193,30 +191,32 @@ const Main = () => {
   }, []);
 
   return (
-    <div>
-      <Title>코로나 현황을 시각화로 확인해보세요.</Title>
-      {isShow.current && <ImgLoding />}
-      <div>
-        <div className="covid--search">
-          <div className="covid--apiCall">
-            <span>시작 날짜</span> <input ref={startInput} type="date" defaultValue={data.startData} name="startData" />
-          </div>
-          <div className="covid--apiCall">
-            <span>종료 날짜</span> <input ref={endInput} type="date" defaultValue={data.endData} name="endData" />
-          </div>
-          <div className="covid--apiCall">
-            <button type="button" onClick={handleClick}>
-              검색
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className="deth-Chart-Container">
-        <div ref={divRef}>
-          <DeathChart divWidth={divWidth} items={apiData}></DeathChart>
-        </div>
-      </div>
-    </div>
+    <section id="Main">
+      <Row>
+        <Col>
+          <MaxWidthContainer>
+            <Title>코로나 현황을 시각화로 확인해보세요.</Title>
+            {isShow.current && <ImgLoding />}
+            <div className="covid--search">
+              <div className="covid--apiCall">
+                <span>시작 날짜</span> <input ref={startInput} type="date" defaultValue={date.startData} name="startData" />
+              </div>
+              <div className="covid--apiCall">
+                <span>종료 날짜</span> <input ref={endInput} type="date" defaultValue={date.endData} name="endData" />
+              </div>
+              <div className="covid--apiCall">
+                <button type="button" onClick={handleClick}>
+                  검색
+                </button>
+              </div>
+            </div>
+            <div className="chart--Container" ref={divRef}>
+              <DeathChart divWidth={divWidth} items={apiData} />
+            </div>
+          </MaxWidthContainer>
+        </Col>
+      </Row>
+    </section>
   );
 };
 
