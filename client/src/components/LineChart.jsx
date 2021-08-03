@@ -1,13 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { LineSvg } from "./styled";
 import * as d3 from "d3";
 
-const DeathChart = ({ divWidth, items }) => {
-  // const [apiData, setApiData] = useState(items);
+const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
   const svgRef = useRef(null);
-  const deathChartSize = {
-    w: divWidth,
-    h: 300,
+  const lineChartSize = {
+    width: divWidth,
+    height: 300,
   };
 
   const render = (data) => {
@@ -27,10 +26,10 @@ const DeathChart = ({ divWidth, items }) => {
       //domain 실제 값 범위
       .domain([0, ticksAndDomainMaxLenhth])
       //range 변환하고 싶은 비율
-      .range([0, deathChartSize.w]);
+      .range([0, lineChartSize.width]);
     const xAxis = d3
       .axisBottom(xScale)
-      .tickSize(-deathChartSize.h)
+      .tickSize(-lineChartSize.height)
       //tickFormat에 들어오는 index는 ticks에서 넣어준 인자 값이다.
 
       // 0이 들어오면 text를 안쓴다
@@ -40,7 +39,7 @@ const DeathChart = ({ divWidth, items }) => {
 
     svgLine
       .select(".x-axis")
-      .style("transform", `translateY(${deathChartSize.h - 1}px)`)
+      .style("transform", `translateY(${lineChartSize.height - 1}px)`)
       .call(xAxis);
 
     //y축 크기
@@ -52,12 +51,13 @@ const DeathChart = ({ divWidth, items }) => {
     const yScale = d3
       .scaleLinear()
       // 50을 추가해주는 이유는 그래프를 편히 보여주기 위해서이다.
-      .domain([YdamainMin - 50, YdamainMax + 50])
-      .range([deathChartSize.h, 0]);
+      // 더하고 빼기 과정을 안해주면 그래프 위 아래로 딱 붙어버린다.
+      .domain([YdamainMin - YdamainMin / 3, YdamainMax + YdamainMin / 3])
+      .range([lineChartSize.height, 0]);
 
     const yAxis = d3
       .axisRight(yScale)
-      .tickSize(-deathChartSize.w)
+      .tickSize(-lineChartSize.width)
       .tickPadding(10)
       .tickFormat((d) => `${d}명`)
       //데이터를 더 세분화해서 보여주기위해
@@ -65,7 +65,7 @@ const DeathChart = ({ divWidth, items }) => {
     // y축 데이터 표현 갯수
     svgLine
       .select(".y-axis")
-      .style("transform", `translateX(${deathChartSize.w - 1}px)`)
+      .style("transform", `translateX(${lineChartSize.width - 1}px)`)
       .call(yAxis);
 
     //path태그 d속성 계산
@@ -205,7 +205,7 @@ const DeathChart = ({ divWidth, items }) => {
 
     // //================================ circles 끝=============================//
 
-    const textGroup = svgLine.select(".textGroup");
+    const textGroup = svgLine.select(".dayGroup").style("transform", `translate(${lineChartSize.width / 2 - 125}px,${lineChartSize.height + 65}px)`);
     const yyyys = textGroup.selectAll(".yyyy").data(yearArticle);
 
     // 년 표시
@@ -233,27 +233,20 @@ const DeathChart = ({ divWidth, items }) => {
       .append("text")
       .text((d) => d)
       .attr("class", "mm")
-      .attr("x", "60")
-      .attr("y", (d, idx) => -(idx * 20) - 10)
+      .attr("x", (d, idx) => idx * 100 + 60)
+      .attr("y", -10)
       .attr("font-weight", "bold");
 
     mms.exit().remove();
 
-    colorBars
-
-      .attr("class", "colorBar")
-      .attr("x", "95")
-      .attr("y", (d, idx) => -(idx * 20) - 23)
-      .attr("width", "50")
-      .attr("height", "15")
-      .attr("fill", (d, idx) => colorBarColors[idx]);
+    colorBars.attr("fill", (d, idx) => colorBarColors[idx]);
 
     colorBars
       .enter()
       .append("rect")
       .attr("class", "colorBar")
-      .attr("y", (d, idx) => -(idx * 20) - 23)
-      .attr("x", "95")
+      .attr("y", -23)
+      .attr("x", (d, idx) => idx * 100 + 95)
       .attr("width", "50")
       .attr("height", "15")
       .attr("fill", (d, idx) => colorBarColors[idx]);
@@ -262,10 +255,10 @@ const DeathChart = ({ divWidth, items }) => {
 
     svgLine
       .select(".title")
-      .datum("코로나 사망자 현황")
+      .datum(chartTitle)
       .text((d) => d)
-      .attr("y", "-20")
-      .attr("x", `${deathChartSize.w / 2 - 65}`)
+      .attr("y", "-15")
+      .attr("x", `${lineChartSize.width / 2 - 65}`)
       .attr("font-weight", "bold");
 
     // new Date형식 바꿔준다.
@@ -274,31 +267,25 @@ const DeathChart = ({ divWidth, items }) => {
 
   useEffect(() => {
     if (items.length !== 0) {
-      const data = items
-        .sort((a, b) => (new Date(a.createDt) > new Date(b.createDt) ? 1 : -1))
-        .map((object, idx) => {
-          return { index: idx, value: object.deathCnt, date: object.createDt };
-        });
-      render(data);
-    } else {
+      const datas = items
+        .sort((x, y) => (new Date(x.createDt) > new Date(y.createDt) ? 1 : -1))
+        .map((object, idx) => ({ index: idx, value: object[`${dataProperty}`], date: object.createDt }));
+      render(datas);
     }
   });
 
-  // useEffect(() => {
-  //   setApiData(items);
-  // }, [items]);
-
   return (
     <>
-      <LineSvg ref={svgRef} width={deathChartSize.w} height={deathChartSize.h}>
+      <LineSvg ref={svgRef} width={lineChartSize.width} height={lineChartSize.height}>
         <g className="x-axis"></g>
         <g className="y-axis"></g>
         <g className="textGroup">
           <text className="title" />
         </g>
+        <g className="dayGroup" />
       </LineSvg>
     </>
   );
 };
 
-export default DeathChart;
+export default LineChart;

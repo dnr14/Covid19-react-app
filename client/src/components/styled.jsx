@@ -95,6 +95,9 @@ Col.defaultProps = {
 };
 
 // ============================ Header ============================
+
+const HOMECHARTMARGINTOP = 110;
+
 export const FlexBox = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -118,12 +121,23 @@ export const FlexBox = styled.div`
   .flex--item {
     text-align: center;
     width: 100%;
-    margin: 50px;
+
+    &:not(:first-child) {
+      margin-top: ${HOMECHARTMARGINTOP}px;
+    }
+
     .flex--item-w50 {
       box-sizing: border-box;
       width: 50%;
-      padding: 0 20px;
       display: inline-block;
+
+      &:first-child {
+        padding-right: 50px;
+      }
+
+      &:last-child {
+        padding-left: 50px;
+      }
     }
   }
 
@@ -141,10 +155,25 @@ export const FlexBox = styled.div`
     li {
       width: 100%;
     }
-    .flex--item > .flex--item-w50 {
-      width: 100%;
-      padding: 0;
-      margin-top: 100px;
+  }
+
+  @media only screen and (max-width: ${BREAK_POINT_TABLET}px) {
+    .flex--item {
+      &:first-child {
+        margin-top: 0;
+      }
+      .flex--item-w50 {
+        width: 100%;
+
+        &:first-child {
+          padding-right: 0px;
+        }
+
+        &:last-child {
+          margin-top: ${HOMECHARTMARGINTOP}px;
+          padding-left: 0px;
+        }
+      }
     }
   }
 `;
@@ -156,6 +185,7 @@ FlexBox.defaultProps = {
 // ============================ Main ============================
 export const Title = styled.div`
   padding: 10px;
+  padding-top: 30px;
   text-align: center;
   font-size: 2rem;
 
@@ -181,6 +211,9 @@ export const LineSvg = styled.svg`
     cursor: pointer;
   }
 
+  //textValue의 트랜지션을 css 로 관리할지 확인
+  // text on off 기능 때문에 생각 해봐야함
+
   line {
     color: rgba(189, 195, 199, 0.5);
   }
@@ -193,3 +226,8 @@ export const LineSvg = styled.svg`
 `;
 
 // ============================ Home ============================
+export const HomeTitle = styled.div`
+  padding-bottom: 30px;
+  text-align: center;
+  font-size: 2rem;
+`;
