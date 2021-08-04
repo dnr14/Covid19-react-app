@@ -1,11 +1,10 @@
 import React from "react";
-import { FlexBox, MaxWidthContainer, Col, Row } from "./styled";
+import { FlexBox, MaxWidthContainer, Col, Row } from "./style/styled";
 import { Link } from "react-router-dom";
-import "scss/header.scss";
 
 const Header = () => {
   return (
-    <header id="header">
+    <header id="header" style={{ backgroundColor: "#e74c3c" }}>
       <Row>
         <Col>
           <MaxWidthContainer>

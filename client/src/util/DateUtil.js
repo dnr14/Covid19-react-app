@@ -46,9 +46,7 @@ export const validation = (date) => {
   const isDataEmptyCheck = (date) => {
     for (const key in date) {
       if (Object.hasOwnProperty.call(date, key)) {
-        if (date[key] === "" || date[key] === undefined || date[key] === null) {
-          return true;
-        }
+        if (date[key] === "") return date[key] ?? true;
       }
     }
     return false;

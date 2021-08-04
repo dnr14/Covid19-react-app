@@ -8,7 +8,7 @@ const SERVICE_KEY = process.env.OPENAPI_KEY;
 
 const callCovidApi = async (_params) => {
   let response;
-  console.log("client ====> server", _params);
+  console.log("client ====> server\n", _params);
   try {
     response = await axios.get(URL, {
       params: {

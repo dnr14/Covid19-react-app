@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { LineSvg } from "./styled";
+import { LineSvg } from "../style/styled";
 import * as d3 from "d3";
 
 const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
@@ -48,11 +48,12 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
     // const yScale = d3.scaleLinear().domain(Ydamain).range([h, 0]);
     const YdamainMax = d3.max(data, (item) => item.value);
     const YdamainMin = d3.min(data, (item) => item.value);
+    const nanum = 45;
     const yScale = d3
       .scaleLinear()
       // 50을 추가해주는 이유는 그래프를 편히 보여주기 위해서이다.
       // 더하고 빼기 과정을 안해주면 그래프 위 아래로 딱 붙어버린다.
-      .domain([YdamainMin - YdamainMin / 3, YdamainMax + YdamainMin / 3])
+      .domain([YdamainMin - YdamainMin / nanum, YdamainMax + YdamainMax / nanum])
       .range([lineChartSize.height, 0]);
 
     const yAxis = d3
@@ -61,7 +62,7 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
       .tickPadding(10)
       .tickFormat((d) => `${d}명`)
       //데이터를 더 세분화해서 보여주기위해
-      .ticks(10);
+      .ticks(7);
     // y축 데이터 표현 갯수
     svgLine
       .select(".y-axis")
@@ -272,7 +273,7 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
         .map((object, idx) => ({ index: idx, value: object[`${dataProperty}`], date: object.createDt }));
       render(datas);
     }
-  });
+  }, [items, divWidth]);
 
   return (
     <>
