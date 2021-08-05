@@ -115,7 +115,6 @@ Col.defaultProps = {
 };
 
 // ============================ Header ============================
-
 const HOMECHARTMARGINTOP = 110;
 
 const flex_items_postion = (x, y) => css`
@@ -495,7 +494,6 @@ export const HomeChartContainer = styled.div`
 `;
 
 // ============================ modal ============================
-
 export const ModalStyled = styled.div`
   .modal-fullscreen {
     position: fixed;
@@ -561,4 +559,11 @@ export const ModalStyled = styled.div`
       }
     }
   }
+`;
+
+// ============================ modal ============================
+export const BarSvg = styled.svg`
+  border: 1px solid;
+  margin-top: 100px;
+  overflow: unset;
 `;

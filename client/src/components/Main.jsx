@@ -2,48 +2,30 @@ import React, { useRef, useState } from "react";
 import { ImgLoding, Title, Row, Col, MaxWidthContainer, MainChartContainer, DateShow, CovidSearch } from "./style/styled";
 import LineChart from "./chart/LineChart";
 import useCurrentDivWidth from "hooks/useCurrentDivWidth";
-import getInitialDate, { validation } from "util/DateUtil.js";
-import deepEquals from "util/DeepEquals.js";
+import getInitialDate from "util/DateUtil.js";
 import chartTitleEnum from "util/ChartTitleEnum";
 import useCovidApiCall from "hooks/useCovidApiCall";
 import ToggleBtn from "./ToggleBtn";
 import Modal from "./Modal";
+import DaySearch from "./DaySearch";
+import BarChart from "./chart/BarChart";
+import deathDummyData from "deathDummy.json";
 
 const Main = () => {
   const [date, setDate] = useState(getInitialDate());
   const [modalOnOff, setModalOnOff] = useState(false);
   const divRef = useRef(null);
-  const startInput = useRef(null);
-  const endInput = useRef(null);
-  const covidApiData = useCovidApiCall(date);
+  // const covidApiData = useCovidApiCall(date);
   const currentDivWidth = useCurrentDivWidth(divRef);
 
   //해야될일
   // 2. 월 별
-  // 3. 년 별
   // 4. bar chart
   // 5. pie chart
 
-  const handleClick = () => {
-    const startValue = startInput.current.value;
-    const endValue = endInput.current.value;
-
-    const currentDataObject = { [startInput.current.name]: startValue, [endInput.current.name]: endValue };
-
-    if (validation(currentDataObject)) {
-      setModalOnOff(true);
-      return;
-    }
-
-    setDate((prevData) => {
-      covidApiData.isShow = true;
-      return covidApiData.isError ? { ...prevData } : deepEquals(prevData, { ...date, ...currentDataObject });
-    });
-  };
-
   return (
     <section id="Main">
-      {covidApiData.isShow && <ImgLoding />}
+      {/* {covidApiData.isShow && <ImgLoding />} */}
       <Row>
         <Col>
           <MaxWidthContainer>
@@ -56,29 +38,18 @@ const Main = () => {
               <span>{date.endData}</span>
             </DateShow>
             <CovidSearch>
-              <div className="covid--apiCall">
-                <span>시작 날짜</span>
-                <input ref={startInput} type="date" defaultValue={date.startData} name="startData" />
-              </div>
-              <div className="covid--apiCall">
-                <span>종료 날짜</span>
-                <input ref={endInput} type="date" defaultValue={date.endData} name="endData" />
-              </div>
-              <div className="covid--apiCall">
-                <button type="button" onClick={handleClick}>
-                  검색
-                </button>
-              </div>
+              {/* <DaySearch setModalOnOff={setModalOnOff} setDate={setDate} covidApiData={covidApiData} date={date}></DaySearch> */}
             </CovidSearch>
             <MainChartContainer>
               <div ref={divRef}>
                 <ToggleBtn />
-                <LineChart
+                {/* <LineChart
                   divWidth={currentDivWidth._100}
                   items={covidApiData.data}
                   dataProperty={"careCnt"}
                   chartTitle={chartTitleEnum["careCnt"]}
-                />
+                /> */}
+                <BarChart divWidth={currentDivWidth._100} items={deathDummyData} dataProperty={"deathCnt"} chartTitle={chartTitleEnum["careCnt"]} />
               </div>
             </MainChartContainer>
           </MaxWidthContainer>

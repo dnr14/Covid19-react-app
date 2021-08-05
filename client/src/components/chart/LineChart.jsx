@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { LineSvg } from "../style/styled";
+import { LineSvg } from "components/style/styled";
 import * as d3 from "d3";
 
 const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
@@ -20,20 +20,21 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
     //x축 크기
     const pars = d3.timeFormat("%d일");
 
-    const ticksAndDomainMaxLenhth = data.length - 1;
+    const ticksAndDomainMaxLength = data.length - 1;
     const xScale = d3
       .scaleLinear()
       //domain 실제 값 범위
-      .domain([0, ticksAndDomainMaxLenhth])
+      .domain([0, ticksAndDomainMaxLength])
       //range 변환하고 싶은 비율
       .range([0, lineChartSize.width]);
+
     const xAxis = d3
       .axisBottom(xScale)
       .tickSize(-lineChartSize.height)
       //tickFormat에 들어오는 index는 ticks에서 넣어준 인자 값이다.
 
       // 0이 들어오면 text를 안쓴다
-      .ticks(ticksAndDomainMaxLenhth === 0 ? 1 : ticksAndDomainMaxLenhth)
+      .ticks(ticksAndDomainMaxLength === 0 ? 1 : ticksAndDomainMaxLength)
       .tickFormat((index) => pars(new Date(data[index].date)))
       .tickPadding(10);
 

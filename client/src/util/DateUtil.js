@@ -5,6 +5,11 @@ export const getDateStr = (date) => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
+export const getMonthStr = (date) => {
+  const mm = `${date.getMonth() + 1}`.padStart(2, "0");
+  return `${mm}`;
+};
+
 export const lastWeek = () => {
   const day = new Date();
   const dayOfMonth = day.getDate();

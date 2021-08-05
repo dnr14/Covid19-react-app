@@ -24,6 +24,11 @@ const Header = () => {
                       <span>통계</span>
                     </Link>
                   </li>
+                  <li>
+                    <Link to="/bar">
+                      <span>테스트 바차트</span>
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </FlexBox>
