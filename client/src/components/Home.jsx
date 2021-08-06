@@ -5,7 +5,7 @@ import ToggleBtn from "components/ToggleBtn";
 import useCurrentDivWidth from "hooks/useCurrentDivWidth.js";
 import useCovidApiCall from "hooks/useCovidApiCall";
 import getInitialDate from "util/DateUtil";
-import chartTitleEnum from "util/ChartTitleEnum";
+import { LineChartTitleEnum } from "util/ChartTitleEnum";
 
 const Home = () => {
   const [date] = useState(getInitialDate());
@@ -34,7 +34,7 @@ const Home = () => {
                       divWidth={currentDivWidth._50}
                       items={covidApiData.data}
                       dataProperty={"examCnt"}
-                      chartTitle={chartTitleEnum["examCnt"]}
+                      chartTitle={LineChartTitleEnum["examCnt"]}
                     />
                   </div>
                   <div className="flex-item--w50">
@@ -42,7 +42,7 @@ const Home = () => {
                       divWidth={currentDivWidth._50}
                       items={covidApiData.data}
                       dataProperty={"decideCnt"}
-                      chartTitle={chartTitleEnum["decideCnt"]}
+                      chartTitle={LineChartTitleEnum["decideCnt"]}
                     />
                   </div>
                 </div>
@@ -51,7 +51,7 @@ const Home = () => {
                     divWidth={currentDivWidth._100}
                     items={covidApiData.data}
                     dataProperty={"deathCnt"}
-                    chartTitle={chartTitleEnum["deathCnt"]}
+                    chartTitle={LineChartTitleEnum["deathCnt"]}
                   />
                 </div>
               </FlexBox>

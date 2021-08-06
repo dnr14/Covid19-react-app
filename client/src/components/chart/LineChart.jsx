@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { LineSvg } from "components/style/styled";
 import * as d3 from "d3";
 
-const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
+const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => {
   const svgRef = useRef(null);
   const lineChartSize = {
     width: divWidth,
@@ -32,7 +32,6 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
       .axisBottom(xScale)
       .tickSize(-lineChartSize.height)
       //tickFormat에 들어오는 index는 ticks에서 넣어준 인자 값이다.
-
       // 0이 들어오면 text를 안쓴다
       .ticks(ticksAndDomainMaxLength === 0 ? 1 : ticksAndDomainMaxLength)
       .tickFormat((index) => pars(new Date(data[index].date)))
@@ -50,6 +49,7 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
     const YdamainMax = d3.max(data, (item) => item.value);
     const YdamainMin = d3.min(data, (item) => item.value);
     const nanum = 45;
+
     const yScale = d3
       .scaleLinear()
       // 50을 추가해주는 이유는 그래프를 편히 보여주기 위해서이다.
@@ -146,7 +146,7 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
     updateText
       .text((d) => `${d.value}명`)
       .attr("x", (d) => xScale(d.index))
-      .attr("class", "textValue")
+      .attr("class", (d) => `textValue`)
       .attr("y", (d) => yScale(d.value) - 10)
       .style("color", "#222")
       .style("font-size", "0.85em")
@@ -191,7 +191,7 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
     enter
       .append("text")
       .text((d) => `${d.value}명`)
-      .attr("class", "textValue")
+      .attr("class", (d) => `textValue`)
       .attr("x", (d) => xScale(d.index))
       .attr("y", (d) => yScale(d.value) - 20)
       .style("color", "#222")
@@ -210,48 +210,66 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle }) => {
     const textGroup = svgLine.select(".dayGroup").style("transform", `translate(${lineChartSize.width / 2 - 125}px,${lineChartSize.height + 65}px)`);
     const yyyys = textGroup.selectAll(".yyyy").data(yearArticle);
 
+    const CommonMargin = 25;
+
+    const yyyysY = (d, idx) => idx * CommonMargin - 10;
+
     // 년 표시
-    yyyys.text((d) => d);
+    yyyys.text((d) => d).attr("y", yyyysY);
 
     yyyys
       .enter()
       .append("text")
       .text((d) => d)
       .attr("class", "yyyy")
-      .attr("y", (d, idx) => -(idx * 20) - 10)
+      .attr("y", yyyysY)
       .attr("font-weight", "bold");
 
     yyyys.exit().remove();
 
     // 월 표시
     const mms = textGroup.selectAll(".mm").data(monthArticle);
-    // 월 표시 컬러
-    const colorBars = textGroup.selectAll(".colorBar").data(monthArticle);
+    const mmsX = 90;
+    const mmsY = (d, idx) => idx * CommonMargin + -10;
 
-    mms.text((d) => d);
+    mms
+      .text((d) => `${d} ${bottomText}`)
+      .attr("x", mmsX)
+      .attr("y", mmsY);
 
     mms
       .enter()
       .append("text")
-      .text((d) => d)
+      .text((d) => `${d} ${bottomText}`)
       .attr("class", "mm")
-      .attr("x", (d, idx) => idx * 100 + 60)
-      .attr("y", -10)
+      .attr("x", mmsX)
+      .attr("y", mmsY)
       .attr("font-weight", "bold");
 
     mms.exit().remove();
 
-    colorBars.attr("fill", (d, idx) => colorBarColors[idx]);
+    // 월 표시 컬러
+    const colorBars = textGroup.selectAll(".colorBar").data(monthArticle);
+    const colorBarsCx = 70;
+    const colorBarsCy = (d, idx) => idx * CommonMargin + -17;
+
+    colorBars
+      .attr("fill", "#fff")
+      .attr("stroke", (d, idx) => colorBarColors[idx])
+      .attr("stroke-width", 2)
+      .attr("cy", colorBarsCy)
+      .attr("cx", colorBarsCx);
 
     colorBars
       .enter()
-      .append("rect")
+      .append("circle")
       .attr("class", "colorBar")
-      .attr("y", -23)
-      .attr("x", (d, idx) => idx * 100 + 95)
-      .attr("width", "50")
-      .attr("height", "15")
-      .attr("fill", (d, idx) => colorBarColors[idx]);
+      .attr("r", "5")
+      .attr("cy", colorBarsCy)
+      .attr("cx", colorBarsCx)
+      .attr("fill", "#fff")
+      .attr("stroke", (d, idx) => colorBarColors[idx])
+      .attr("stroke-width", 2);
 
     colorBars.exit().remove();
 

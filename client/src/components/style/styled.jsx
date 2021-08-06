@@ -564,6 +564,10 @@ export const ModalStyled = styled.div`
 // ============================ modal ============================
 export const BarSvg = styled.svg`
   border: 1px solid;
-  margin-top: 100px;
+  margin-top: 120px;
   overflow: unset;
+
+  rect {
+    cursor: pointer;
+  }
 `;

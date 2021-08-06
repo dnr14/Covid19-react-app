@@ -3,19 +3,18 @@ import { ImgLoding, Title, Row, Col, MaxWidthContainer, MainChartContainer, Date
 import LineChart from "./chart/LineChart";
 import useCurrentDivWidth from "hooks/useCurrentDivWidth";
 import getInitialDate from "util/DateUtil.js";
-import chartTitleEnum from "util/ChartTitleEnum";
+import { BarChartTitleEnum, LineChartTitleEnum } from "util/ChartTitleEnum";
 import useCovidApiCall from "hooks/useCovidApiCall";
 import ToggleBtn from "./ToggleBtn";
 import Modal from "./Modal";
 import DaySearch from "./DaySearch";
 import BarChart from "./chart/BarChart";
-import deathDummyData from "deathDummy.json";
 
 const Main = () => {
   const [date, setDate] = useState(getInitialDate());
   const [modalOnOff, setModalOnOff] = useState(false);
   const divRef = useRef(null);
-  // const covidApiData = useCovidApiCall(date);
+  const covidApiData = useCovidApiCall(date);
   const currentDivWidth = useCurrentDivWidth(divRef);
 
   //해야될일
@@ -25,7 +24,7 @@ const Main = () => {
 
   return (
     <section id="Main">
-      {/* {covidApiData.isShow && <ImgLoding />} */}
+      {covidApiData.isShow && <ImgLoding />}
       <Row>
         <Col>
           <MaxWidthContainer>
@@ -38,18 +37,25 @@ const Main = () => {
               <span>{date.endData}</span>
             </DateShow>
             <CovidSearch>
-              {/* <DaySearch setModalOnOff={setModalOnOff} setDate={setDate} covidApiData={covidApiData} date={date}></DaySearch> */}
+              <DaySearch setModalOnOff={setModalOnOff} setDate={setDate} covidApiData={covidApiData} date={date}></DaySearch>
             </CovidSearch>
             <MainChartContainer>
               <div ref={divRef}>
                 <ToggleBtn />
-                {/* <LineChart
+                <LineChart
                   divWidth={currentDivWidth._100}
                   items={covidApiData.data}
-                  dataProperty={"careCnt"}
-                  chartTitle={chartTitleEnum["careCnt"]}
-                /> */}
-                <BarChart divWidth={currentDivWidth._100} items={deathDummyData} dataProperty={"deathCnt"} chartTitle={chartTitleEnum["careCnt"]} />
+                  dataProperty={"clearCnt"}
+                  chartTitle={LineChartTitleEnum["clearCnt"].title}
+                  bottomText={LineChartTitleEnum["clearCnt"].bottomText}
+                />
+                <BarChart
+                  divWidth={currentDivWidth._100}
+                  items={covidApiData.data}
+                  dataProperty={"clearCnt"}
+                  chartTitle={BarChartTitleEnum["clearCnt"].title}
+                  bottomText={BarChartTitleEnum["clearCnt"].bottomText}
+                />
               </div>
             </MainChartContainer>
           </MaxWidthContainer>

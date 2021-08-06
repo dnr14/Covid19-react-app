@@ -5,11 +5,6 @@ export const getDateStr = (date) => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
-export const getMonthStr = (date) => {
-  const mm = `${date.getMonth() + 1}`.padStart(2, "0");
-  return `${mm}`;
-};
-
 export const lastWeek = () => {
   const day = new Date();
   const dayOfMonth = day.getDate();
@@ -61,4 +56,17 @@ export const validation = (date) => {
     return !isFalse;
   }
   return isFalse;
+};
+
+export const groupBy = function (data, key) {
+  return data.reduce(function (carry, el) {
+    const group = `${el.createDt.split("-")[0]}-${el.createDt.split("-")[1]}`;
+
+    if (carry[group] === undefined) {
+      carry[group] = [];
+    }
+
+    carry[`${group}`].push(el);
+    return carry;
+  }, {});
 };

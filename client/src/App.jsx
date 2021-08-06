@@ -12,7 +12,6 @@ function App() {
       <Switch>
         <Route path="/" exact component={Home} />
         <Route path="/main" component={Main} />
-        <Route path="/bar" component={BarChart} />
       </Switch>
     </BrowserRouter>
   );
