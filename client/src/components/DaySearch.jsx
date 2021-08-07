@@ -15,7 +15,7 @@ const DaySearch = ({ setModalOnOff, setDate, covidApiData, date }) => {
     const currentDataObject = { [startInput.current.name]: startValue, [endInput.current.name]: endValue };
 
     if (validation(currentDataObject)) {
-      setModalOnOff(true);
+      setModalOnOff({ current: true, titles: ["날짜를 확인하세요.", "최대 7일까지 가능", "빈값 입력 확인"] });
       return;
     }
 

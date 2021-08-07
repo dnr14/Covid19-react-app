@@ -1,10 +1,7 @@
 import React, { useRef, useState } from "react";
-import { endMonthCheck, startMonthCheck } from "util/DateUtil";
+import { endMonthCheck, monthValidation, startMonthCheck } from "util/DateUtil";
 import deepEquals from "util/DeepEquals";
 import Search from "./Search";
-
-//해야될일
-// 벨리데이션 , 보고싶은 데이터 셀렉터 , 셀렉터 박스 꾸미기
 
 const MonthSearch = ({ setModalOnOff, setDate, covidApiData, date }) => {
   const startInput = useRef(null);
@@ -23,6 +20,11 @@ const MonthSearch = ({ setModalOnOff, setDate, covidApiData, date }) => {
     const endValue = endInput.current.value;
 
     const currentDataObject = { [startInput.current.name]: startValue, [endInput.current.name]: endValue };
+
+    if (monthValidation(currentDataObject)) {
+      setModalOnOff({ current: true, titles: ["날짜를 확인하세요.", "최대 2달까지 가능", "빈값 입력 확인"] });
+      return;
+    }
 
     setDate((prevData) => {
       covidApiData.isShow = true;

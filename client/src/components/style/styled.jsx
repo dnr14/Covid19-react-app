@@ -1,6 +1,6 @@
 import styled, { createGlobalStyle, css } from "styled-components";
 import loding from "images/loding.gif";
-const BREAK_POINT_SMALL_MOBILE = 560;
+import arrow from "images/arrow.svg";
 const BREAK_POINT_MOBILE = 768;
 const BREAK_POINT_TABLET = 992;
 const BREAK_POINT_PC = 1200;
@@ -13,12 +13,6 @@ const maxWidthByBreakPointMobile = (props) => css`
 `;
 const maxWidthByBreakPointTable = (props) => css`
   @media only screen and (max-width: ${BREAK_POINT_TABLET}px) {
-    ${props}
-  }
-`;
-
-const maxWidthByBreakPointSmallMobile = (props) => css`
-  @media only screen and (max-width: ${BREAK_POINT_SMALL_MOBILE}px) {
     ${props}
   }
 `;
@@ -449,9 +443,22 @@ export const CovidSearch = styled.div`
       }
     }
 
-    ${maxWidthByBreakPointSmallMobile(
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background: url(${arrow}) no-repeat 90% 50%;
+      width: 55px;
+      padding: 0.3rem 0.5rem;
+      cursor: pointer;
+      border: 1px solid #999;
+      margin: 0 10px;
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    ${maxWidthByBreakPointMobile(
       css`
-        width: 100%;
+        width: 90%;
         display: flex;
         flex-wrap: wrap;
         font-size: 0.7rem;
@@ -466,9 +473,18 @@ export const CovidSearch = styled.div`
           width: 100%;
         }
 
+        span + input {
+          margin: 0;
+        }
+
         button {
           width: 100%;
           font-size: 1rem;
+        }
+
+        select {
+          width: 100%;
+          margin: 0;
         }
       `
     )}
@@ -522,7 +538,6 @@ export const ModalStyled = styled.div`
     left: 50%;
     transform: translate(-50%, -50%);
     width: 18rem;
-    height: 135px;
     background-color: #fff;
     z-index: -1;
     opacity: 0;
@@ -541,6 +556,7 @@ export const ModalStyled = styled.div`
     }
 
     main {
+      padding-bottom: 20px;
       button {
         border: 1px solid transparent;
         padding: 7px 10px;
@@ -569,5 +585,43 @@ export const BarSvg = styled.svg`
 
   rect {
     cursor: pointer;
+  }
+`;
+
+// ============================ select Box ============================
+export const StyledSelect = styled.select``;
+
+// ============================ list ============================
+export const StyledList = styled.ul`
+  display: flex;
+  padding: 10px 0 20px 0;
+  gap: 10px;
+  li {
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+    span {
+      background-color: rgb(231, 76, 60);
+      padding: 15px;
+      display: inline-block;
+      width: 100%;
+      color: #fff;
+      border: 1px solid transparent;
+      line-height: 15px;
+      border-radius: 5px;
+      &:hover {
+        text-decoration: underline;
+        color: #000;
+        border: 1px solid;
+        background-color: white;
+      }
+    }
+  }
+
+  .selected {
+    background-color: white;
+    text-decoration: underline;
+    color: #000;
+    border: 1px solid;
   }
 `;

@@ -29,30 +29,7 @@ export const hyphenRemove = (date) => {
 
 export const validation = (date) => {
   const isFalse = false;
-
-  const is7DayDifferenceChecked = (date) => {
-    const _7DayTime = 518400000;
-    const { startData, endData } = date;
-    const startTime = new Date(startData).getTime();
-    const endTime = new Date(endData).getTime();
-    const difference = endTime - startTime;
-
-    if (difference > _7DayTime) {
-      return true;
-    }
-    return false;
-  };
-  const isDateCheck = (date) => Object.keys(date).reduce((acc, current) => date[acc] > date[current]);
-  const isDataEmptyCheck = (date) => {
-    for (const key in date) {
-      if (Object.hasOwnProperty.call(date, key)) {
-        if (date[key] === "") return date[key] ?? true;
-      }
-    }
-    return false;
-  };
-
-  if (is7DayDifferenceChecked(date) || isDateCheck(date) || isDataEmptyCheck(date)) {
+  if (isDataEmptyCheck(date) || isDateCheck(date) || is7DayDifferenceChecked(date)) {
     return !isFalse;
   }
   return isFalse;
@@ -101,3 +78,51 @@ export const monthInitailDate = () => {
     endData: endMonthDate,
   };
 };
+
+
+export const monthValidation = date => {
+  const isFalse = false;
+
+
+  if (isDateCheck(date) || isDataEmptyCheck(date) || is2MonthDifferenceChecked(date)) {
+    return !isFalse;
+  }
+  return isFalse;
+}
+
+export const isDataEmptyCheck = (date) => {
+  for (const key in date) {
+    if (Object.hasOwnProperty.call(date, key)) {
+      if (date[key] === "" || date[key] === undefined) return true;
+    }
+  }
+  return false;
+};
+export const isDateCheck = (date) => Object.keys(date).reduce((acc, current) => date[acc] > date[current]);
+
+export const is7DayDifferenceChecked = (date) => {
+  const _7DayTime = 518400000;
+  const { startData, endData } = date;
+  const startTime = new Date(startData).getTime();
+  const endTime = new Date(endData).getTime();
+  const difference = endTime - startTime;
+
+  if (difference > _7DayTime) {
+    return true;
+  }
+  return false;
+};
+
+export const is2MonthDifferenceChecked = date => {
+
+  const { startData, endData } = date;
+
+  const startMonth = new Date(startData).getMonth();
+  const endMonth = new Date(endData).getMonth();
+
+  if (endMonth - startMonth > 1) {
+    return true;
+  }
+
+  return false;
+}

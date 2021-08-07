@@ -292,7 +292,7 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
         .map((object, idx) => ({ index: idx, value: object[`${dataProperty}`], date: object.createDt }));
       render(datas);
     }
-  }, [items, divWidth]);
+  });
 
   return (
     <>

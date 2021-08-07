@@ -2,27 +2,27 @@ import React, { useRef, useState } from "react";
 import { ImgLoding, Title, Row, Col, MaxWidthContainer, MainChartContainer, DateShow, CovidSearch } from "./style/styled";
 import LineChart from "./chart/LineChart";
 import useCurrentDivWidth from "hooks/useCurrentDivWidth";
-import getInitialDate, { monthInitailDate } from "util/DateUtil.js";
+import getInitialDate from "util/DateUtil.js";
 import { BarChartTitleEnum, LineChartTitleEnum } from "util/ChartTitleEnum";
 import useCovidApiCall from "hooks/useCovidApiCall";
 import ToggleBtn from "./ToggleBtn";
 import Modal from "./Modal";
-import DaySearch from "./DaySearch";
 import BarChart from "./chart/BarChart";
-import MonthSearch from "./MonthSearch";
-import SelectBox from "./SelectBox";
+import List from "./List";
+import SearchContainer from "./SearchContainer";
+
+// 보고싶은 데이터 셀렉터
 
 const Main = () => {
   const [date, setDate] = useState(getInitialDate());
-  const [searchType, setSearchType] = useState("day");
-  const [modalOnOff, setModalOnOff] = useState(false);
+  const [modalOnOff, setModalOnOff] = useState({
+    current: false,
+    titles: [],
+  });
   const divRef = useRef(null);
   const covidApiData = useCovidApiCall(date);
   const currentDivWidth = useCurrentDivWidth(divRef);
-
-  //해야될일
-  // 2. 월 별
-  // 이니셜데이터
+  const [currnetProperty, setCurrnetProperty] = useState("deathCnt");
 
   return (
     <section id="Main">
@@ -30,7 +30,7 @@ const Main = () => {
       <Row>
         <Col>
           <MaxWidthContainer>
-            <Modal modalOnOff={modalOnOff} setModalOnOff={setModalOnOff} title={"날짜를 확인하세요. 최대 7일까지 빈값 입력 확인"} />
+            <Modal modalOnOff={modalOnOff} setModalOnOff={setModalOnOff} />
             <Title>코로나 데이터를 시각화로 확인해보세요.</Title>
             <DateShow>
               <span>검색한 데이터 날짜</span>
@@ -39,29 +39,26 @@ const Main = () => {
               <span>{date.endData}</span>
             </DateShow>
             <CovidSearch>
-              {searchType === "day" ? (
-                <DaySearch setModalOnOff={setModalOnOff} setDate={setDate} covidApiData={covidApiData} date={getInitialDate()} />
-              ) : (
-                <MonthSearch setModalOnOff={setModalOnOff} setDate={setDate} covidApiData={covidApiData} date={monthInitailDate()} />
-              )}
-              <SelectBox searchType={searchType} setSearchType={setSearchType} />
+              <SearchContainer setModalOnOff={setModalOnOff} setDate={setDate} covidApiData={covidApiData} />
             </CovidSearch>
+
             <MainChartContainer>
               <div ref={divRef}>
+                <List currnetProperty={currnetProperty} setCurrnetProperty={setCurrnetProperty} />
                 <ToggleBtn />
                 <LineChart
                   divWidth={currentDivWidth._100}
                   items={covidApiData.data}
-                  dataProperty={"clearCnt"}
-                  chartTitle={LineChartTitleEnum["clearCnt"].title}
-                  bottomText={LineChartTitleEnum["clearCnt"].bottomText}
+                  dataProperty={currnetProperty}
+                  chartTitle={LineChartTitleEnum[`${currnetProperty}`].title}
+                  bottomText={LineChartTitleEnum[`${currnetProperty}`].bottomText}
                 />
                 <BarChart
                   divWidth={currentDivWidth._100}
                   items={covidApiData.data}
-                  dataProperty={"clearCnt"}
-                  chartTitle={BarChartTitleEnum["clearCnt"].title}
-                  bottomText={BarChartTitleEnum["clearCnt"].bottomText}
+                  dataProperty={currnetProperty}
+                  chartTitle={BarChartTitleEnum[`${currnetProperty}`].title}
+                  bottomText={BarChartTitleEnum[`${currnetProperty}`].bottomText}
                 />
               </div>
             </MainChartContainer>

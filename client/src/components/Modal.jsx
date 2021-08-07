@@ -1,14 +1,18 @@
 import React from "react";
 import { ModalStyled } from "components/style/styled";
 
-const Modal = ({ setModalOnOff, title, modalOnOff }) => {
+const Modal = ({ setModalOnOff, modalOnOff }) => {
   return (
-    <ModalStyled modalOnOff={modalOnOff}>
+    <ModalStyled modalOnOff={modalOnOff.current}>
       <div className="modal-fullscreen"></div>
       <div className="modal--container">
-        <header>{title}</header>
+        <header>
+          {modalOnOff.titles.map((title, idx) => (
+            <div key={idx}>{title}</div>
+          ))}
+        </header>
         <main>
-          <button onClick={() => setModalOnOff(false)}>닫기</button>
+          <button onClick={() => setModalOnOff({ ...modalOnOff, current: !modalOnOff.current })}>닫기</button>
         </main>
       </div>
     </ModalStyled>

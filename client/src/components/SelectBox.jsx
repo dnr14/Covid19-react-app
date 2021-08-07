@@ -1,4 +1,5 @@
 import React from "react";
+import { StyledSelect } from "./style/styled";
 
 const SelectBox = ({ setSearchType, searchType }) => {
   const handleChange = (e) => {
@@ -7,10 +8,13 @@ const SelectBox = ({ setSearchType, searchType }) => {
   };
 
   return (
-    <select defaultValue={searchType} onChange={handleChange}>
-      <option value="month">월</option>
-      <option value="day">일</option>
-    </select>
+    <div className="covid--apiCall">
+      <span>날짜 단위</span>
+      <StyledSelect defaultValue={searchType} onChange={handleChange}>
+        <option value="month">월</option>
+        <option value="day">일</option>
+      </StyledSelect>
+    </div>
   );
 };
 

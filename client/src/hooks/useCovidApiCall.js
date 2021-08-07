@@ -2,10 +2,6 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { hyphenRemove } from 'util/DateUtil';
 
-//테스트 자료
-// import deathData from "deathDummy.json";
-// import decideData from "decideDummy.json";
-
 const API_URL = "/api/covid-19"
 
 const InitalState = {

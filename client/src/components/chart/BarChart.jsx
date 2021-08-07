@@ -17,26 +17,6 @@ const onMouseOut = (e, data) => {
   select(`.textValue.textValue-${data.index}`).style("font-weight", "bold").transition().duration(200).style("opacity", 0);
 };
 
-// const getDummyDate = () => {
-//   const array = [];
-//   let day = 1;
-//   let Month = 6;
-//   for (let i = 0; i < 61; i++) {
-//     array.push({
-//       deathCnt: 11168 + i * 200,
-//       createDt: `2021-${String(Month).padStart(2, "0")}-${String(day).padStart(2, "0")} 09:37:41.356`,
-//     });
-
-//     if (i === 29) {
-//       day = 1;
-//       Month++;
-//     } else {
-//       day++;
-//     }
-//   }
-//   return array;
-// };
-
 const BarChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => {
   const svgRef = useRef(null);
 
@@ -249,6 +229,7 @@ const BarChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => 
       render(newData);
     }
   });
+
   return (
     <>
       <BarSvg ref={svgRef} width={barChartSize.width} height={barChartSize.height}>
