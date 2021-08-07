@@ -2,16 +2,19 @@ import React, { useRef, useState } from "react";
 import { ImgLoding, Title, Row, Col, MaxWidthContainer, MainChartContainer, DateShow, CovidSearch } from "./style/styled";
 import LineChart from "./chart/LineChart";
 import useCurrentDivWidth from "hooks/useCurrentDivWidth";
-import getInitialDate from "util/DateUtil.js";
+import getInitialDate, { monthInitailDate } from "util/DateUtil.js";
 import { BarChartTitleEnum, LineChartTitleEnum } from "util/ChartTitleEnum";
 import useCovidApiCall from "hooks/useCovidApiCall";
 import ToggleBtn from "./ToggleBtn";
 import Modal from "./Modal";
 import DaySearch from "./DaySearch";
 import BarChart from "./chart/BarChart";
+import MonthSearch from "./MonthSearch";
+import SelectBox from "./SelectBox";
 
 const Main = () => {
   const [date, setDate] = useState(getInitialDate());
+  const [searchType, setSearchType] = useState("day");
   const [modalOnOff, setModalOnOff] = useState(false);
   const divRef = useRef(null);
   const covidApiData = useCovidApiCall(date);
@@ -19,8 +22,7 @@ const Main = () => {
 
   //해야될일
   // 2. 월 별
-  // 4. bar chart
-  // 5. pie chart
+  // 이니셜데이터
 
   return (
     <section id="Main">
@@ -37,7 +39,12 @@ const Main = () => {
               <span>{date.endData}</span>
             </DateShow>
             <CovidSearch>
-              <DaySearch setModalOnOff={setModalOnOff} setDate={setDate} covidApiData={covidApiData} date={date}></DaySearch>
+              {searchType === "day" ? (
+                <DaySearch setModalOnOff={setModalOnOff} setDate={setDate} covidApiData={covidApiData} date={getInitialDate()} />
+              ) : (
+                <MonthSearch setModalOnOff={setModalOnOff} setDate={setDate} covidApiData={covidApiData} date={monthInitailDate()} />
+              )}
+              <SelectBox searchType={searchType} setSearchType={setSearchType} />
             </CovidSearch>
             <MainChartContainer>
               <div ref={divRef}>

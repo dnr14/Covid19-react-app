@@ -34,7 +34,8 @@ const Home = () => {
                       divWidth={currentDivWidth._50}
                       items={covidApiData.data}
                       dataProperty={"examCnt"}
-                      chartTitle={LineChartTitleEnum["examCnt"]}
+                      chartTitle={LineChartTitleEnum["examCnt"].title}
+                      bottomText={LineChartTitleEnum["examCnt"].bottomText}
                     />
                   </div>
                   <div className="flex-item--w50">
@@ -42,7 +43,8 @@ const Home = () => {
                       divWidth={currentDivWidth._50}
                       items={covidApiData.data}
                       dataProperty={"decideCnt"}
-                      chartTitle={LineChartTitleEnum["decideCnt"]}
+                      chartTitle={LineChartTitleEnum["decideCnt"].title}
+                      bottomText={LineChartTitleEnum["decideCnt"].bottomText}
                     />
                   </div>
                 </div>
@@ -51,7 +53,8 @@ const Home = () => {
                     divWidth={currentDivWidth._100}
                     items={covidApiData.data}
                     dataProperty={"deathCnt"}
-                    chartTitle={LineChartTitleEnum["deathCnt"]}
+                    chartTitle={LineChartTitleEnum["deathCnt"].title}
+                    bottomText={LineChartTitleEnum["deathCnt"].bottomText}
                   />
                 </div>
               </FlexBox>

@@ -518,7 +518,7 @@ export const ModalStyled = styled.div`
     text-align: center;
     position: absolute;
     border-radius: 5px;
-    top: 50%;
+    top: 20%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 18rem;
@@ -563,7 +563,7 @@ export const ModalStyled = styled.div`
 
 // ============================ modal ============================
 export const BarSvg = styled.svg`
-  border: 1px solid;
+  border: 2px solid;
   margin-top: 120px;
   overflow: unset;
 

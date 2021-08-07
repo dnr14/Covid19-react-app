@@ -1,7 +1,7 @@
 export const getDateStr = (date) => {
   const yyyy = date.getFullYear();
   const mm = `${date.getMonth() + 1}`.padStart(2, "0");
-  const dd = `${date.getDate() - 1}`.padStart(2, "0");
+  const dd = `${date.getDate()}`.padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 };
 
@@ -69,4 +69,35 @@ export const groupBy = function (data, key) {
     carry[`${group}`].push(el);
     return carry;
   }, {});
+};
+
+export const startMonthCheck = (date) => {
+  const [yyyy, mm] = date.split("-");
+  return `${yyyy}-${mm}-01`;
+}
+
+export const endMonthCheck = date => {
+  const [yyyy, mm] = date.split("-");
+  const idx = mm.indexOf(0);
+
+  const result = mm.indexOf(0) === 0
+    ? getDateStr(new Date(yyyy, mm.slice(idx + 1, mm.length), 0))
+    : getDateStr(new Date(yyyy, mm, 0));
+
+  return result;
+}
+
+
+export const monthInitailDate = () => {
+
+  const end = new Date();
+  const start = new Date(end.getFullYear(), end.getMonth() - 1, end.getDate());
+
+  const startMonthDate = startMonthCheck(getDateStr(start));
+  const endMonthDate = endMonthCheck(getDateStr(end));
+
+  return {
+    startData: startMonthDate,
+    endData: endMonthDate,
+  };
 };

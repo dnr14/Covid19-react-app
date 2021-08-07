@@ -251,7 +251,7 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
     // 월 표시 컬러
     const colorBars = textGroup.selectAll(".colorBar").data(monthArticle);
     const colorBarsCx = 70;
-    const colorBarsCy = (d, idx) => idx * CommonMargin + -17;
+    const colorBarsCy = (d, idx) => idx * CommonMargin + -15;
 
     colorBars
       .attr("fill", "#fff")
