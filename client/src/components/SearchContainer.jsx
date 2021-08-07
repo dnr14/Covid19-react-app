@@ -19,4 +19,4 @@ const SearchContainer = ({ setModalOnOff, setDate, covidApiData }) => {
   );
 };
 
-export default SearchContainer;
+export default React.memo(SearchContainer);

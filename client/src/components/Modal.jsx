@@ -1,7 +1,7 @@
 import React from "react";
 import { ModalStyled } from "components/style/styled";
 
-const Modal = ({ setModalOnOff, modalOnOff }) => {
+const Modal = React.memo(function Modal({ setModalOnOff, modalOnOff }) {
   return (
     <ModalStyled modalOnOff={modalOnOff.current}>
       <div className="modal-fullscreen"></div>
@@ -17,6 +17,6 @@ const Modal = ({ setModalOnOff, modalOnOff }) => {
       </div>
     </ModalStyled>
   );
-};
+});
 
 export default Modal;

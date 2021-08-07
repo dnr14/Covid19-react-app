@@ -11,8 +11,6 @@ import BarChart from "./chart/BarChart";
 import List from "./List";
 import SearchContainer from "./SearchContainer";
 
-// 보고싶은 데이터 셀렉터
-
 const Main = () => {
   const [date, setDate] = useState(getInitialDate());
   const [modalOnOff, setModalOnOff] = useState({

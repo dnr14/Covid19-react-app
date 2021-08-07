@@ -1,6 +1,7 @@
 import styled, { createGlobalStyle, css } from "styled-components";
 import loding from "images/loding.gif";
 import arrow from "images/arrow.svg";
+import React from "react";
 const BREAK_POINT_MOBILE = 768;
 const BREAK_POINT_TABLET = 992;
 const BREAK_POINT_PC = 1200;
@@ -88,7 +89,7 @@ const calcWidthPercent = (span) => {
   return width;
 };
 
-export const Col = styled.div`
+const StyledCol = styled.div`
   float: left;
   width: ${({ xs }) => (xs ? `${calcWidthPercent(xs)}%` : `100%`)};
   @media only screen and (min-width: ${BREAK_POINT_MOBILE}px) {
@@ -101,11 +102,15 @@ export const Col = styled.div`
     width: ${({ lg }) => lg && `${calcWidthPercent(lg)}%`};
   }
 `;
-Col.defaultProps = {
+StyledCol.defaultProps = {
   xs: 12,
   sm: 12,
   md: 12,
   lg: 12,
+};
+
+export const Col = (props) => {
+  return <StyledCol props={props}>{props.children}</StyledCol>;
 };
 
 // ============================ Header ============================
@@ -273,7 +278,7 @@ FlexBox.defaultProps = {
 };
 
 // ============================ Main ============================
-export const Title = styled.div`
+export const Title = React.memo(styled.div`
   padding: 30px 10px;
   text-align: center;
   font-size: 2rem;
@@ -283,7 +288,7 @@ export const Title = styled.div`
       font-size: 1.5rem;
     `
   )}
-`;
+`);
 
 // ============================ Death chart ============================
 export const LineSvg = styled.svg`

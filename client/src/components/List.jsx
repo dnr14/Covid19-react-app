@@ -42,4 +42,4 @@ const List = ({ setCurrnetProperty, currnetProperty }) => {
   );
 };
 
-export default List;
+export default React.memo(List);
