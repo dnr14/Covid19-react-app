@@ -1,12 +1,12 @@
 import React, { useRef, useState } from "react";
 import { ImgLoding, Title, Row, Col, MaxWidthContainer, MainChartContainer, DateShow, CovidSearch } from "./style/styled";
-import LineChart from "./chart/LineChart";
 import useCurrentDivWidth from "hooks/useCurrentDivWidth";
 import getInitialDate from "util/DateUtil.js";
 import { BarChartTitleEnum, LineChartTitleEnum } from "util/ChartTitleEnum";
 import useCovidApiCall from "hooks/useCovidApiCall";
 import ToggleBtn from "./ToggleBtn";
 import Modal from "./Modal";
+import LineChart from "./chart/LineChart";
 import BarChart from "./chart/BarChart";
 import List from "./List";
 import SearchContainer from "./SearchContainer";

@@ -593,7 +593,7 @@ export const BarSvg = styled.svg`
   }
 `;
 
-// ============================ select Box ============================
+// ============================ select Box ======================
 export const StyledSelect = styled.select``;
 
 // ============================ list ============================
@@ -628,5 +628,22 @@ export const StyledList = styled.ul`
     text-decoration: underline;
     color: #000;
     border: 1px solid;
+  }
+`;
+
+// ============================ 404 not found ============================
+export const StyledNotFound = styled.div`
+  margin: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .title {
+    font-size: 3rem;
+    margin: 50px 0;
+  }
+  .link {
+    padding: 50px;
   }
 `;
