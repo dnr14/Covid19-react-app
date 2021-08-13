@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import { LineSvg } from "components/style/styled";
 import * as d3 from "d3";
 
@@ -308,4 +308,4 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
   );
 };
 
-export default LineChart;
+export default memo(LineChart);

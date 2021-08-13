@@ -1,7 +1,7 @@
 import styled, { createGlobalStyle, css } from "styled-components";
 import loding from "images/loding.gif";
 import arrow from "images/arrow.svg";
-import React from "react";
+import React, { memo } from "react";
 const BREAK_POINT_MOBILE = 768;
 const BREAK_POINT_TABLET = 992;
 const BREAK_POINT_PC = 1200;
@@ -278,19 +278,9 @@ FlexBox.defaultProps = {
 };
 
 // ============================ Main ============================
-export const Title = React.memo(styled.div`
-  padding: 30px 10px;
-  text-align: center;
-  font-size: 2rem;
-
-  ${maxWidthByBreakPointMobile(
-    css`
-      font-size: 1.5rem;
-    `
-  )}
-`);
 
 // ============================ Death chart ============================
+
 export const LineSvg = styled.svg`
   overflow: unset;
   border-top: 1px solid;
@@ -306,9 +296,6 @@ export const LineSvg = styled.svg`
   .point {
     cursor: pointer;
   }
-
-  //textValue의 트랜지션을 css 로 관리할지 확인
-  // text on off 기능 때문에 생각 해봐야함
 
   line {
     color: rgba(189, 195, 199, 0.5);
@@ -400,7 +387,7 @@ export const DateShow = styled.div`
   margin-bottom: 1rem;
 `;
 
-export const CovidSearch = styled.div`
+export const CovidSearch = memo(styled.div`
   width: 100%;
   flex-wrap: wrap;
   ${flex_items_postion("center", "center")}
@@ -494,7 +481,7 @@ export const CovidSearch = styled.div`
       `
     )}
   }
-`;
+`);
 
 export const MainChartContainer = styled.div`
   width: 80%;
@@ -647,3 +634,16 @@ export const StyledNotFound = styled.div`
     padding: 50px;
   }
 `;
+
+// ============================ Title ============================
+export const Title = memo(styled.div`
+  padding: 30px 10px;
+  text-align: center;
+  font-size: 2rem;
+
+  ${maxWidthByBreakPointMobile(
+    css`
+      font-size: 1.5rem;
+    `
+  )}
+`);

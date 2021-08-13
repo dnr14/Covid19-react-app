@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import { BarSvg } from "components/style/styled";
 import { select, scaleBand, easeLinear, timeFormat, scaleLinear, max, axisRight, axisBottom, transition } from "d3";
 import { groupBy } from "util/DateUtil";
@@ -247,4 +247,4 @@ const BarChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => 
 // 해야될일
 // 월별 검색 달력
 
-export default BarChart;
+export default memo(BarChart);

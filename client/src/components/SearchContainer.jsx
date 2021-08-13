@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import getInitialDate, { monthInitailDate } from "util/DateUtil";
 import DaySearch from "./DaySearch";
 import MonthSearch from "./MonthSearch";
 import SelectBox from "./SelectBox";
 
-const SearchContainer = ({ setModalOnOff, setDate, covidApiData }) => {
+const SearchContainer = function SearchContainer({ setModalOnOff, setDate, covidApiData }) {
   const [searchType, setSearchType] = useState("day");
 
   return (
@@ -19,4 +19,4 @@ const SearchContainer = ({ setModalOnOff, setDate, covidApiData }) => {
   );
 };
 
-export default React.memo(SearchContainer);
+export default memo(SearchContainer);
