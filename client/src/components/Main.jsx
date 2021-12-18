@@ -1,5 +1,14 @@
 import React, { useRef, useState } from "react";
-import { ImgLoding, Title, Row, Col, MaxWidthContainer, MainChartContainer, DateShow, CovidSearch } from "./style/styled";
+import {
+  ImgLoding,
+  Title,
+  Row,
+  Col,
+  MaxWidthContainer,
+  MainChartContainer,
+  DateShow,
+  CovidSearch,
+} from "./style/styled";
 import useCurrentDivWidth from "hooks/useCurrentDivWidth";
 import getInitialDate from "util/DateUtil.js";
 import { BarChartTitleEnum, LineChartTitleEnum } from "util/ChartTitleEnum";
@@ -37,26 +46,37 @@ const Main = () => {
               <span>{date.endData}</span>
             </DateShow>
             <CovidSearch>
-              <SearchContainer setModalOnOff={setModalOnOff} setDate={setDate} covidApiData={covidApiData} />
+              <SearchContainer
+                setModalOnOff={setModalOnOff}
+                setDate={setDate}
+                covidApiData={covidApiData}
+              />
             </CovidSearch>
 
             <MainChartContainer>
               <div ref={divRef}>
-                <List currnetProperty={currnetProperty} setCurrnetProperty={setCurrnetProperty} />
+                <List
+                  currnetProperty={currnetProperty}
+                  setCurrnetProperty={setCurrnetProperty}
+                />
                 <ToggleBtn />
                 <LineChart
                   divWidth={currentDivWidth._100}
                   items={covidApiData.data}
                   dataProperty={currnetProperty}
                   chartTitle={LineChartTitleEnum[`${currnetProperty}`].title}
-                  bottomText={LineChartTitleEnum[`${currnetProperty}`].bottomText}
+                  bottomText={
+                    LineChartTitleEnum[`${currnetProperty}`].bottomText
+                  }
                 />
                 <BarChart
                   divWidth={currentDivWidth._100}
                   items={covidApiData.data}
                   dataProperty={currnetProperty}
                   chartTitle={BarChartTitleEnum[`${currnetProperty}`].title}
-                  bottomText={BarChartTitleEnum[`${currnetProperty}`].bottomText}
+                  bottomText={
+                    BarChartTitleEnum[`${currnetProperty}`].bottomText
+                  }
                 />
               </div>
             </MainChartContainer>

@@ -35,6 +35,11 @@ const GlobalStyled = createGlobalStyle`
   list-style: none;
   margin:0px; padding:0px;
   }
+  
+  input:focus,
+  select:focus{
+    outline: none;
+  }
  
 `;
 
@@ -276,8 +281,6 @@ export const FlexBox = styled.div`
 FlexBox.defaultProps = {
   position: "sb",
 };
-
-// ============================ Main ============================
 
 // ============================ Death chart ============================
 

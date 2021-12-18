@@ -24,7 +24,7 @@ const useCovidApiCall = (date) => {
     const callApi = async ({ startData, endData }) => {
       try {
         return await axios.post(API_URL, {
-          params: {
+          params: { 
             startCreateDt: startData,
             endCreateDt: endData,
           },

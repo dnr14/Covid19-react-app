@@ -2,7 +2,13 @@ import React, { memo, useEffect, useRef } from "react";
 import { LineSvg } from "components/style/styled";
 import * as d3 from "d3";
 
-const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => {
+const LineChart = ({
+  divWidth,
+  items,
+  dataProperty,
+  chartTitle,
+  bottomText,
+}) => {
   const svgRef = useRef(null);
   const lineChartSize = {
     width: divWidth,
@@ -10,8 +16,12 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
   };
 
   const render = (data) => {
-    const yPreprocessing = data.map((object) => `${new Date(object.date).getFullYear()}년`);
-    const mPreprocessing = data.map((object) => `${new Date(object.date).getMonth() + 1}월`);
+    const yPreprocessing = data.map(
+      (object) => `${new Date(object.date).getFullYear()}년`
+    );
+    const mPreprocessing = data.map(
+      (object) => `${new Date(object.date).getMonth() + 1}월`
+    );
     const monthArticle = new Set(mPreprocessing);
     const yearArticle = new Set(yPreprocessing);
     const colorBarColors = ["#e74c3c", "#2980b9"];
@@ -54,7 +64,10 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
       .scaleLinear()
       // 50을 추가해주는 이유는 그래프를 편히 보여주기 위해서이다.
       // 더하고 빼기 과정을 안해주면 그래프 위 아래로 딱 붙어버린다.
-      .domain([YdamainMin - YdamainMin / nanum, YdamainMax + YdamainMax / nanum])
+      .domain([
+        YdamainMin - YdamainMin / nanum,
+        YdamainMax + YdamainMax / nanum,
+      ])
       .range([lineChartSize.height, 0]);
 
     const yAxis = d3
@@ -79,7 +92,11 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
     const pathDrawTime = 2000;
     const pathDrawDelayTime = 200;
     // 트랜지션 생성
-    const transitionPath = d3.transition().ease(d3.easeSin).duration(pathDrawTime).delay(pathDrawDelayTime);
+    const transitionPath = d3
+      .transition()
+      .ease(d3.easeSin)
+      .duration(pathDrawTime)
+      .delay(pathDrawDelayTime);
 
     const path = svgLine
       .selectAll(".line")
@@ -94,7 +111,11 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
 
     // 라인 그리는 트랜지션 추가
     //시작점을 0으로 만들어줘서 마치 선이 생성되는 애니메이션을 얻을 수 있다.
-    path.attr("stroke-dashoffset", pathLength).attr("stroke-dasharray", pathLength).transition(transitionPath).attr("stroke-dashoffset", 0);
+    path
+      .attr("stroke-dashoffset", pathLength)
+      .attr("stroke-dasharray", pathLength)
+      .transition(transitionPath)
+      .attr("stroke-dashoffset", 0);
     //================================ circles =============================//
 
     // =========================== update 패턴 시작 ============================//
@@ -111,7 +132,10 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
         before = `${new Date(d.date).getMonth() + 1}월`;
         return colorBarColors[0];
       }
-      const currentColor = before === `${new Date(d.date).getMonth() + 1}월` ? colorBarColors[0] : colorBarColors[1];
+      const currentColor =
+        before === `${new Date(d.date).getMonth() + 1}월`
+          ? colorBarColors[0]
+          : colorBarColors[1];
       return currentColor;
     };
 
@@ -131,7 +155,11 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
           .style("opacity", 1)
           .style("font-weight", "bold")
           .attr("y", (d) => yScale(d.value) - 15);
-        d3.select(target).transition().duration(100).attr("r", 8).attr("fill", "#fff");
+        d3.select(target)
+          .transition()
+          .duration(100)
+          .attr("r", 8)
+          .attr("fill", "#fff");
       })
       .on("mouseleave", (event) => {
         const { target } = event;
@@ -140,7 +168,11 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
           .duration(200)
           .style("opacity", 0)
           .attr("y", (d) => yScale(d.value) - 20);
-        d3.select(target).transition().duration(100).attr("r", 4).attr("fill", "#fff");
+        d3.select(target)
+          .transition()
+          .duration(100)
+          .attr("r", 4)
+          .attr("fill", "#fff");
       });
 
     updateText
@@ -175,7 +207,11 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
           .style("opacity", 1)
           .style("font-weight", "bold")
           .attr("y", (d) => yScale(d.value) - 15);
-        d3.select(target).transition().duration(100).attr("r", 8).attr("fill", "#fff");
+        d3.select(target)
+          .transition()
+          .duration(100)
+          .attr("r", 8)
+          .attr("fill", "#fff");
       })
       .on("mouseleave", (event) => {
         const { target } = event;
@@ -184,7 +220,11 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
           .duration(200)
           .style("opacity", 0)
           .attr("y", (d) => yScale(d.value) - 20);
-        d3.select(target).transition().duration(100).attr("r", 4).attr("fill", "#fff");
+        d3.select(target)
+          .transition()
+          .duration(100)
+          .attr("r", 4)
+          .attr("fill", "#fff");
       });
 
     // line 차트 텍스트 생성
@@ -207,7 +247,14 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
 
     // //================================ circles 끝=============================//
 
-    const textGroup = svgLine.select(".dayGroup").style("transform", `translate(${lineChartSize.width / 2 - 125}px,${lineChartSize.height + 65}px)`);
+    const textGroup = svgLine
+      .select(".dayGroup")
+      .style(
+        "transform",
+        `translate(${lineChartSize.width / 2 - 125}px,${
+          lineChartSize.height + 65
+        }px)`
+      );
     const yyyys = textGroup.selectAll(".yyyy").data(yearArticle);
 
     const CommonMargin = 25;
@@ -289,14 +336,22 @@ const LineChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) =>
     if (items.length !== 0) {
       const datas = items
         .sort((x, y) => (new Date(x.createDt) > new Date(y.createDt) ? 1 : -1))
-        .map((object, idx) => ({ index: idx, value: object[`${dataProperty}`], date: object.createDt }));
+        .map((object, idx) => ({
+          index: idx,
+          value: object[`${dataProperty}`],
+          date: object.createDt,
+        }));
       render(datas);
     }
   });
 
   return (
     <>
-      <LineSvg ref={svgRef} width={lineChartSize.width} height={lineChartSize.height}>
+      <LineSvg
+        ref={svgRef}
+        width={lineChartSize.width}
+        height={lineChartSize.height}
+      >
         <g className="x-axis"></g>
         <g className="y-axis"></g>
         <g className="textGroup">

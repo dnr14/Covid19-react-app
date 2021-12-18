@@ -1,5 +1,14 @@
 import React, { useRef, useState } from "react";
-import { MaxWidthContainer, Col, Row, FlexBox, HomeTitle, ImgLoding, DateShow, HomeChartContainer } from "./style/styled";
+import {
+  MaxWidthContainer,
+  Col,
+  Row,
+  FlexBox,
+  HomeTitle,
+  ImgLoding,
+  DateShow,
+  HomeChartContainer,
+} from "./style/styled";
 import LineChart from "components/chart/LineChart";
 import ToggleBtn from "components/ToggleBtn";
 import useCurrentDivWidth from "hooks/useCurrentDivWidth.js";
@@ -33,9 +42,9 @@ const Home = () => {
                     <LineChart
                       divWidth={currentDivWidth._50}
                       items={covidApiData.data}
-                      dataProperty={"examCnt"}
-                      chartTitle={LineChartTitleEnum["examCnt"].title}
-                      bottomText={LineChartTitleEnum["examCnt"].bottomText}
+                      dataProperty={"accExamCnt"}
+                      chartTitle={LineChartTitleEnum["accExamCnt"].title}
+                      bottomText={LineChartTitleEnum["accExamCnt"].bottomText}
                     />
                   </div>
                   <div className="flex-item--w50">
