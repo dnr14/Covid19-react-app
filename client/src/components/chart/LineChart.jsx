@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef } from "react";
-import { LineSvg } from "components/style/styled";
+import { LineSvg } from "assets/style/styled";
 import * as d3 from "d3";
 
 const LineChart = ({
@@ -346,20 +346,18 @@ const LineChart = ({
   });
 
   return (
-    <>
-      <LineSvg
-        ref={svgRef}
-        width={lineChartSize.width}
-        height={lineChartSize.height}
-      >
-        <g className="x-axis"></g>
-        <g className="y-axis"></g>
-        <g className="textGroup">
-          <text className="title" />
-        </g>
-        <g className="dayGroup" />
-      </LineSvg>
-    </>
+    <LineSvg
+      ref={svgRef}
+      width={lineChartSize.width}
+      height={lineChartSize.height}
+    >
+      <g className="x-axis"></g>
+      <g className="y-axis"></g>
+      <g className="textGroup">
+        <text className="title" />
+      </g>
+      <g className="dayGroup" />
+    </LineSvg>
   );
 };
 

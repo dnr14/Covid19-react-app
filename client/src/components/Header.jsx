@@ -1,5 +1,5 @@
 import React from "react";
-import { FlexBox, MaxWidthContainer, Col, Row } from "./style/styled";
+import { FlexBox, MaxWidthContainer, Col, Row } from "assets/style/styled";
 import { Link } from "react-router-dom";
 
 const Header = () => {

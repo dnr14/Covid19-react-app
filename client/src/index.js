@@ -1,7 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App.jsx';
-import GlobalStyled, { AppWrapper } from 'components/style/styled';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App.jsx";
+import GlobalStyled, { AppWrapper } from "assets/style/styled";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -10,6 +10,5 @@ ReactDOM.render(
       <App />
     </AppWrapper>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
-

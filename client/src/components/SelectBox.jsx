@@ -1,5 +1,5 @@
 import React from "react";
-import { StyledSelect } from "./style/styled";
+import { StyledSelect } from "assets/style/styled";
 
 const SelectBox = ({ setSearchType, searchType }) => {
   const handleChange = (e) => {

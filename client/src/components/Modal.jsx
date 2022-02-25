@@ -1,5 +1,5 @@
 import React from "react";
-import { ModalStyled } from "components/style/styled";
+import { ModalStyled } from "assets/style/styled";
 
 const Modal = React.memo(function Modal({ setModalOnOff, modalOnOff }) {
   return (
@@ -12,7 +12,13 @@ const Modal = React.memo(function Modal({ setModalOnOff, modalOnOff }) {
           ))}
         </header>
         <main>
-          <button onClick={() => setModalOnOff({ ...modalOnOff, current: !modalOnOff.current })}>닫기</button>
+          <button
+            onClick={() =>
+              setModalOnOff({ ...modalOnOff, current: !modalOnOff.current })
+            }
+          >
+            닫기
+          </button>
         </main>
       </div>
     </ModalStyled>

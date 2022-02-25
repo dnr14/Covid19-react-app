@@ -1,6 +1,6 @@
 import styled, { createGlobalStyle, css } from "styled-components";
-import loding from "images/loding.gif";
-import arrow from "images/arrow.svg";
+import loading from "assets/images/loading.gif";
+import arrow from "assets/images/arrow.svg";
 import React, { memo } from "react";
 const BREAK_POINT_MOBILE = 768;
 const BREAK_POINT_TABLET = 992;
@@ -61,17 +61,18 @@ export const MaxWidthContainer = styled.div`
   position: relative;
 `;
 // ============================ Loding ============================
-export const ImgLoding = styled.div`
+export const Loading = styled.div`
   background: transparent;
   position: fixed;
   top: 0;
   bottom: 0;
   right: 0;
   left: 0;
-  background-image: url(${loding});
+  background-image: url(${loading});
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 200px;
+  background-size: 100px;
+  z-index: 10;
 `;
 
 // ============================ Row or Col ============================

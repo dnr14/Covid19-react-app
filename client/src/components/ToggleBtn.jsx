@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ToggleBtnStyled } from "./style/styled";
+import { ToggleBtnStyled } from "assets/style/styled";
 
 const ToggleBtn = () => {
   const [onOff, setOnoff] = useState(false);

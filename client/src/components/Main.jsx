@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import {
-  ImgLoding,
+  Loading,
   Title,
   Row,
   Col,
@@ -8,7 +8,7 @@ import {
   MainChartContainer,
   DateShow,
   CovidSearch,
-} from "./style/styled";
+} from "assets/style/styled";
 import useCurrentDivWidth from "hooks/useCurrentDivWidth";
 import getInitialDate from "util/DateUtil.js";
 import { BarChartTitleEnum, LineChartTitleEnum } from "util/ChartTitleEnum";
@@ -33,7 +33,7 @@ const Main = () => {
 
   return (
     <section id="Main">
-      {covidApiData.isShow && <ImgLoding />}
+      {covidApiData.isShow && <Loading />}
       <Row>
         <Col>
           <MaxWidthContainer>

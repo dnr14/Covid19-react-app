@@ -5,10 +5,10 @@ import {
   Row,
   FlexBox,
   HomeTitle,
-  ImgLoding,
+  Loading,
   DateShow,
   HomeChartContainer,
-} from "./style/styled";
+} from "assets/style/styled";
 import LineChart from "components/chart/LineChart";
 import ToggleBtn from "components/ToggleBtn";
 import useCurrentDivWidth from "hooks/useCurrentDivWidth.js";
@@ -27,7 +27,7 @@ const Home = () => {
       <Row>
         <Col>
           <MaxWidthContainer>
-            {covidApiData.isShow && <ImgLoding />}
+            {covidApiData.isShow && <Loading />}
             <HomeChartContainer>
               <HomeTitle>코로나 현황 사이트 😷</HomeTitle>
               <DateShow>

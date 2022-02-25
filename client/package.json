@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "cross-env BUILD_PATH='../server/client/build' react-scripts build",
+    "build": "cross-env BUILD_PATH='../server/client' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

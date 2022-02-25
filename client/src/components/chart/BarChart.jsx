@@ -1,6 +1,16 @@
 import React, { memo, useEffect, useRef } from "react";
-import { BarSvg } from "components/style/styled";
-import { select, scaleBand, easeLinear, timeFormat, scaleLinear, max, axisRight, axisBottom, transition } from "d3";
+import { BarSvg } from "assets/style/styled";
+import {
+  select,
+  scaleBand,
+  easeLinear,
+  timeFormat,
+  scaleLinear,
+  max,
+  axisRight,
+  axisBottom,
+  transition,
+} from "d3";
 import { groupBy } from "util/DateUtil";
 
 const onMouseOver = (yScale) => (e, data) => {
@@ -14,10 +24,20 @@ const onMouseOver = (yScale) => (e, data) => {
 };
 
 const onMouseOut = (e, data) => {
-  select(`.textValue.textValue-${data.index}`).style("font-weight", "bold").transition().duration(200).style("opacity", 0);
+  select(`.textValue.textValue-${data.index}`)
+    .style("font-weight", "bold")
+    .transition()
+    .duration(200)
+    .style("opacity", 0);
 };
 
-const BarChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => {
+const BarChart = ({
+  divWidth,
+  items,
+  dataProperty,
+  chartTitle,
+  bottomText,
+}) => {
   const svgRef = useRef(null);
 
   const barChartSize = {
@@ -32,7 +52,12 @@ const BarChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => 
     const height = svg.attr("height") - barChartSize.margin;
     const xScale = scaleBand().range([0, width]).padding(0.5);
     const yScale = scaleLinear().range([height, 0]);
-    const gragh = svg.select(".graph").attr("transform", `translate(${barChartSize.margin / 3},${barChartSize.margin / 3})`);
+    const gragh = svg
+      .select(".graph")
+      .attr(
+        "transform",
+        `translate(${barChartSize.margin / 3},${barChartSize.margin / 3})`
+      );
     const colorBarColors = ["#e74c3c", "#2980b9"];
     const pars = timeFormat("%m월");
 
@@ -59,11 +84,22 @@ const BarChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => 
         .attr("transform", `translate(${width - 1},0)`)
         .call(yAxis);
 
-      const textGroup = svg.select(".dayGroup").style("transform", `translate(${barChartSize.width / 2 - 165}px,${barChartSize.height - 85}px)`);
+      const textGroup = svg
+        .select(".dayGroup")
+        .style(
+          "transform",
+          `translate(${barChartSize.width / 2 - 165}px,${
+            barChartSize.height - 85
+          }px)`
+        );
       const commonMargin = 25;
 
-      const yearPreprocessing = data.map((object) => `${new Date(object.date).getFullYear()}년`);
-      const monthPreprocessing = data.map((object) => `${new Date(object.date).getMonth() + 1}월`);
+      const yearPreprocessing = data.map(
+        (object) => `${new Date(object.date).getFullYear()}년`
+      );
+      const monthPreprocessing = data.map(
+        (object) => `${new Date(object.date).getMonth() + 1}월`
+      );
       const monthArticle = new Set(monthPreprocessing);
       const yearArticle = new Set(yearPreprocessing);
 
@@ -73,7 +109,10 @@ const BarChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => 
         const barsSetHeight = (d) => height - yScale(d.value);
         const barsX = (d) => xScale(d.date);
         const barsY = (d) => yScale(d.value) - barsMaginbottom;
-        const transitionPath = transition().ease(easeLinear).duration(1000).delay(0);
+        const transitionPath = transition()
+          .ease(easeLinear)
+          .duration(1000)
+          .delay(0);
 
         let before;
         const setCircleColor = () => (d, idx) => {
@@ -81,7 +120,9 @@ const BarChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => 
             before = `${new Date(d.date).getMonth() + 1}월`;
             return colorBarColors[0];
           }
-          return before === `${new Date(d.date).getMonth() + 1}월` ? colorBarColors[0] : colorBarColors[1];
+          return before === `${new Date(d.date).getMonth() + 1}월`
+            ? colorBarColors[0]
+            : colorBarColors[1];
         };
 
         bars
@@ -154,7 +195,12 @@ const BarChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => 
         const colorBarWidth = 30;
         const colorBarHeight = 10;
 
-        colorBars.attr("y", colorBarsY).attr("x", colorBarsX).attr("width", colorBarWidth).attr("height", colorBarHeight).attr("fill", colorBarsFill);
+        colorBars
+          .attr("y", colorBarsY)
+          .attr("x", colorBarsX)
+          .attr("width", colorBarWidth)
+          .attr("height", colorBarHeight)
+          .attr("fill", colorBarsFill);
 
         colorBars
           .enter()
@@ -231,16 +277,18 @@ const BarChart = ({ divWidth, items, dataProperty, chartTitle, bottomText }) => 
   });
 
   return (
-    <>
-      <BarSvg ref={svgRef} width={barChartSize.width} height={barChartSize.height}>
-        <g className="graph">
-          <g className="x-axis" />
-          <g className="y-axis" />
-          <text className="title" />
-          <g className="dayGroup" />
-        </g>
-      </BarSvg>
-    </>
+    <BarSvg
+      ref={svgRef}
+      width={barChartSize.width}
+      height={barChartSize.height}
+    >
+      <g className="graph">
+        <g className="x-axis" />
+        <g className="y-axis" />
+        <text className="title" />
+        <g className="dayGroup" />
+      </g>
+    </BarSvg>
   );
 };
 

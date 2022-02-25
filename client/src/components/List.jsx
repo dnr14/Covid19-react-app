@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyledList } from "./style/styled";
+import { StyledList } from "assets/style/styled";
 
 const List = ({ setCurrnetProperty, currnetProperty }) => {
   const handleClick = (e) => {
