@@ -631,8 +631,8 @@ export const StyledNotFound = styled.div`
   flex-direction: column;
 
   .title {
-    font-size: 3rem;
-    margin: 50px 0;
+    font-size: 2rem;
+    margin: 15px 0;
   }
   .link {
     padding: 50px;
