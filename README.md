@@ -67,9 +67,9 @@ cd server npm start
 └─router      // express 경로 router 모음
 
 ```
-
-<br>
-
+    
+<hr/>
+    
 # 2. 배포 👨‍🔧
 
 #### 배포 환경 그림
